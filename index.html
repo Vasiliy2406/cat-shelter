@@ -77,7 +77,7 @@
         /* Эффект нажатия: кнопка сдвигается, тень исчезает */
         button:active {
             transform: translate(4px, 4px); /* Сдвиг на размер тени */
-            box-shadow: 0 0 0 transparent; /* Прозрачная тень */
+            box-shadow: 0 0 0 transparent !important; /* !important перебивает JS-стиль */
         }
         
         /* Убедимся, что у кнопки еды нет жестко заданной тени в CSS */
@@ -117,12 +117,14 @@
             hungerEl.innerText = Math.floor(hunger);
             coinsEl.innerText = coins;
             
-            // Меняем цвет кнопки "Покормить" (тень трогать не будем)
+                        // Меняем цвет кнопки и её тени
             const feedBtn = document.getElementById('feed-btn');
             if (hunger < 30) {
-                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый
+                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый фон
+                feedBtn.style.boxShadow = '4px 4px 0 #e65100'; // Темно-оранжевая тень
             } else {
-                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый
+                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый фон
+                feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; // Темно-зеленая тень
             }
 
             // МЕНЯЕМ КАРТИНКУ КОТА
