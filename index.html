@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Приют Котов</title>
+    <!-- Подключаем пиксельный шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #2b2b2b;
+            color: #fff;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        /* Контейнер для кота, чтобы картинка не размывалась */
+        .cat-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background-color: #1e1e1e;
+            border: 4px solid #555;
+            border-radius: 20px;
+        }
+
+        /* Магия пиксель-арта: растягиваем, но сохраняем четкость */
+        .cat-container img {
+            width: 160px; 
+            height: 160px;
+            image-rendering: pixelated; /* Это свойство делает пиксели четкими! */
+            image-rendering: crisp-edges;
+        }
+
+        .stats {
+            font-size: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        .coins {
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 10px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 #2e7d32;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 #2e7d32;
+        }
+
+        /* Кнопка еды красная, если кот голоден */
+        #feed-btn { background-color: #f44336; box-shadow: 4px 4px 0 #b71c1c; }
+    </style>
+</head>
+<body>
+
+    <div class="stats">
+        Голод: <span id="hunger">100</span>%<br>
+        Монеты: <span class="coins" id="coins">0</span> 🪙
+    </div>
+
+    <div class="cat-container">
+        <!-- Сюда вставляется твоя картинка -->
+        <img src="cat.png" alt="Котик" id="cat-img">
+    </div>
+
+    <div class="buttons">
+        <button id="feed-btn">Покормить (5🪙)</button>
+        <button id="pet-btn">Погладить (+2🪙)</button>
+    </div>
+
+    <script>
+        // Начальные значения
+        let hunger = 100; // Максимум 100
+        let coins = 0;
+
+        const hungerEl = document.getElementById('hunger');
+        const coinsEl = document.getElementById('coins');
+        const catImg = document.getElementById('cat-img');
+
+        // Функция обновления экрана
+        function updateUI() {
+            hungerEl.innerText = Math.floor(hunger);
+            coinsEl.innerText = coins;
+            
+            // Меняем цвет кнопки, если кот очень голоден
+            if (hunger < 30) {
+                document.getElementById('feed-btn').style.backgroundColor = '#ff9800'; // Оранжевый
+            } else {
+                document.getElementById('feed-btn').style.backgroundColor = '#4caf50'; // Зеленый
+            }
+        }
+
+        // Кот голодает каждые 3 секунды
+        setInterval(() => {
+            if (hunger > 0) {
+                hunger -= 1;
+                updateUI();
+            }
+        }, 3000);
+
+        // Кнопка "Покормить"
+        document.getElementById('feed-btn').addEventListener('click', () => {
+            if (coins >= 5) {
+                coins -= 5;
+                hunger += 20; // Восстанавливаем 20% голода
+                if (hunger > 100) hunger = 100; // Не больше 100%
+                updateUI();
+            } else {
+                alert("Не хватает монет! Гладь кота, чтобы заработать.");
+            }
+        });
+
+        // Кнопка "Погладить"
+        document.getElementById('pet-btn').addEventListener('click', () => {
+            coins += 2;
+            // Кот немного теряет голод от активности, но получает монеты
+            hunger -= 1; 
+            if (hunger < 0) hunger = 0;
+            
+            // Анимация прыжка
+            catImg.style.transform = "scale(1.1)";
+            setTimeout(() => { catImg.style.transform = "scale(1)"; }, 100);
+            
+            updateUI();
+        });
+
+        // Запуск при старте
+        updateUI();
+    </script>
+</body>
+</html>
