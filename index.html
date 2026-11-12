@@ -126,11 +126,12 @@
     </div>
 
             <script>
-        let satiety = 100; // Сытость
-        let coins = 0;
-        let energy = 10; // Энергия
+                // Загружаем сохраненные данные или ставим значения по умолчанию
+        let satiety = parseInt(localStorage.getItem('satiety')) ?? 100;
+        let coins = parseInt(localStorage.getItem('coins')) ?? 0;
+        let energy = parseInt(localStorage.getItem('energy')) ?? 10;
         let maxEnergy = 10;
-        let isOffended = false;  
+        let isOffended = false; // Обиду не сохраняем, чтобы игрок не застрял навсегда  
 
         const satietyEl = document.getElementById('satiety');
         const coinsEl = document.getElementById('coins');
@@ -140,7 +141,7 @@
         const petBtn = document.getElementById('pet-btn');
         const helpBtn = document.getElementById('help-btn');
 
-                function updateUI() {
+                        function updateUI() {
             satietyEl.innerText = Math.floor(satiety);
             coinsEl.innerText = coins;
             energyEl.innerText = energy;
@@ -158,7 +159,10 @@
             if (satiety < 30) {
                 catImg.src = 'cat_sad.png'; 
             } else {
-                catImg.src = 'cat.png'; 
+                // Если кот не ест прямо сейчас, ставим обычную картинку
+                if (catImg.src !== 'cat_eat.png') {
+                    catImg.src = 'cat.png'; 
+                }
             }
 
             // ЛОГИКА КНОПКИ ПОМОЩИ
@@ -180,6 +184,15 @@
                 petBtn.disabled = false;
                 petBtn.innerText = "Погладить (+2🪙)";
             }
+
+            saveGame(); // Сохраняем каждое изменение (ВОТ ЗДЕСЬ)
+        }
+
+        // А вот функция сохранения должна идти СРАЗУ ПОСЛЕ updateUI
+        function saveGame() {
+            localStorage.setItem('satiety', satiety);
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('energy', energy);
         }
 
                 // Кот теряет сытость
@@ -198,7 +211,7 @@
             }
         }, 15000);
 
-        // Покормить
+                // Покормить
         feedBtn.addEventListener('click', () => {
             if (isOffended) {
                 alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
@@ -210,8 +223,11 @@
                 satiety += 20; 
                 if (satiety > 100) satiety = 100; 
                 
-                catImg.style.transform = "scale(1.2)";
-                setTimeout(() => { catImg.style.transform = "scale(1)"; }, 200);
+                // Меняем картинку на "ест" и обратно
+                catImg.src = 'cat_eat.png'; 
+                setTimeout(() => { 
+                    catImg.src = 'cat.png'; // Возвращаем обычного
+                }, 1000);
                 
                 updateUI();
             } else {
