@@ -202,10 +202,12 @@
     <!-- Твой скрипт останется ниже -->
 
     <script>
+        let isEating = false; // Ест ли кот прямо сейчас
                 // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
         let energy = Number(localStorage.getItem('energy'));
+    
 
         // Если данные битые (NaN) или их нет, ставим стандартные
         if (isNaN(satiety)) satiety = 100;
@@ -228,10 +230,10 @@
                 energy = Math.min(maxEnergy, energy + energyToAdd); 
             }
 
-            // 2. Уменьшение сытости (1 единица за 3 секунды)
-            let satietyToRemove = Math.floor(secondsPassed / 3);
+            // 2. Уменьшение сытости (1 единица за 300 секунд = 5 минут)
+            let satietyToRemove = Math.floor(secondsPassed / 300);
             if (satietyToRemove > 0) {
-                satiety = Math.max(0, satiety - satietyToRemove); 
+                satiety = Math.max(5, satiety - satietyToRemove); // Не падает ниже 5%
             }
         }
 
@@ -268,14 +270,14 @@
                 feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; 
             }
 
-            // Картинка кота (упрощенная, чтобы не мешать анимации еды)
-            if (satiety < 30) {
+            // Картинка кота
+            if (isEating) {
+                // Если кот ест, мы НЕ МЕНЯЕМ картинку, пусть доиграет анимацию
+                return; 
+            } else if (satiety < 30) {
                 catImg.src = 'cat_sad.png'; 
             } else {
-                // Ставим обычную картинку, если кот сейчас не ест
-                if (catImg.src.indexOf('cat_eat.png') === -1) {
-                    catImg.src = 'cat.png'; 
-                }
+                catImg.src = 'cat.png'; 
             }
 
             // ЛОГИКА КНОПКИ ПОМОЩИ
@@ -307,7 +309,7 @@
                 satiety -= 1;
                 updateUI();
             }
-        }, 3000);
+        }, 15000);
 
         // Восстановление энергии (каждые 15 сек для теста)
         setInterval(() => {
@@ -318,7 +320,7 @@
         }, 15000);
 
         // Покормить
-        feedBtn.addEventListener('click', () => {
+                feedBtn.addEventListener('click', () => {
             if (isOffended) {
                 alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
                 return; 
@@ -329,10 +331,15 @@
                 satiety += 20; 
                 if (satiety > 100) satiety = 100; 
                 
-                // Меняем картинку на "ест" и обратно
+                // Включаем флаг "ест"
+                isEating = true;
                 catImg.src = 'cat_eat.png'; 
+                
+                // Через 1 секунду выключаем флаг и возвращаем нормальную картинку
                 setTimeout(() => { 
-                    catImg.src = 'cat.png'; // Возвращаем обычного
+                    isEating = false;
+                    // Вызываем обновление интерфейса, чтобы он сам поставил нужную картинку
+                    updateUI(); 
                 }, 1000);
                 
                 updateUI();
