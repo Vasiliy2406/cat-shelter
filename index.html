@@ -98,44 +98,59 @@
         <img src="cat.png" alt="Котик" id="cat-img">
     </div>
 
-    <div class="buttons">
+        <div class="buttons">
         <button id="feed-btn">Покормить (5🪙)</button>
         <button id="pet-btn">Погладить (+2🪙)</button>
+        <!-- Новая кнопка помощи -->
+        <button id="help-btn" style="display: none; background-color: #2196f3; box-shadow: 4px 4px 0 #0d47a1;">Помощь (25🪙)</button>
     </div>
 
-        <script>
-        // Начальные значения
-        let hunger = 100; // Максимум 100
+            <script>
+        let hunger = 100; 
         let coins = 0;
+        let isOffended = false; // Флаг: обиделся ли кот
 
         const hungerEl = document.getElementById('hunger');
         const coinsEl = document.getElementById('coins');
         const catImg = document.getElementById('cat-img');
+        const feedBtn = document.getElementById('feed-btn');
+        const petBtn = document.getElementById('pet-btn');
+        const helpBtn = document.getElementById('help-btn');
 
-        // Функция обновления экрана
         function updateUI() {
             hungerEl.innerText = Math.floor(hunger);
             coinsEl.innerText = coins;
             
-                        // Меняем цвет кнопки и её тени
-            const feedBtn = document.getElementById('feed-btn');
+            // Цвет и тень кнопки еды
             if (hunger < 30) {
-                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый фон
-                feedBtn.style.boxShadow = '4px 4px 0 #e65100'; // Темно-оранжевая тень
+                feedBtn.style.backgroundColor = '#ff9800'; 
+                feedBtn.style.boxShadow = '4px 4px 0 #e65100'; 
             } else {
-                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый фон
-                feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; // Темно-зеленая тень
+                feedBtn.style.backgroundColor = '#4caf50'; 
+                feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; 
             }
 
-            // МЕНЯЕМ КАРТИНКУ КОТА
+            // Картинка кота
             if (hunger < 30) {
-                catImg.src = 'cat_sad.png'; // Грустный кот
+                catImg.src = 'cat_sad.png'; 
             } else {
-                catImg.src = 'cat.png'; // Обычный кот
+                catImg.src = 'cat.png'; 
+            }
+
+            // ЛОГИКА КНОПКИ ПОМОЩИ (если голод 0 и монет 0, или монет меньше 5, а голод 0)
+            if (hunger <= 0 && coins < 5 && !isOffended) {
+                helpBtn.style.display = 'block'; // Показываем кнопку помощи
+                // Скрываем остальные, чтобы не кликали впустую
+                feedBtn.style.display = 'none';
+                petBtn.style.display = 'none';
+            } else {
+                helpBtn.style.display = 'none'; // Прячем кнопку помощи
+                feedBtn.style.display = 'block';
+                petBtn.style.display = 'block';
             }
         }
 
-        // Кот голодает каждые 3 секунды
+        // Кот голодает
         setInterval(() => {
             if (hunger > 0) {
                 hunger -= 1;
@@ -143,36 +158,59 @@
             }
         }, 3000);
 
-        // Кнопка "Покормить"
-        document.getElementById('feed-btn').addEventListener('click', () => {
+        // Покормить
+        feedBtn.addEventListener('click', () => {
             if (coins >= 5) {
                 coins -= 5;
-                hunger += 20; // Восстанавливаем 20% голода
-                if (hunger > 100) hunger = 100; // Не больше 100%
+                hunger += 20; 
+                if (hunger > 100) hunger = 100; 
                 updateUI();
             } else {
                 alert("Не хватает монет! Гладь кота, чтобы заработать.");
             }
         });
 
-        // Кнопка "Погладить"
-        document.getElementById('pet-btn').addEventListener('click', () => {
-            // ПРОВЕРКА: Если кот голоден, он не дает себя гладить
+        // Погладить
+        petBtn.addEventListener('click', () => {
+            if (isOffended) return; // Если обиделся, не даем гладить
+
             if (hunger <= 0) {
                 alert("Кот слишком голоден! Сначала покорми его.");
-                return; // Выходим из функции, монеты не начисляются
+                return;
             }
 
             coins += 2;
-            // Кот немного теряет голод от активности, но получает монеты
             hunger -= 1; 
             if (hunger < 0) hunger = 0;
             
-            // Анимация прыжка
             catImg.style.transform = "scale(1.1)";
             setTimeout(() => { catImg.style.transform = "scale(1)"; }, 100);
             
             updateUI();
+        });
+
+        // НОВАЯ КНОПКА: Помощь из приюта
+        helpBtn.addEventListener('click', () => {
+            coins += 25; // Даем 25 монет
+            isOffended = true; // Кот обиделся
+            
+            alert("Приют прислал 25 монет на еду! Но кот обиделся и не хочет играть 15 минут.");
+            
+            updateUI(); // Обновляем экран (кнопка помощи исчезнет, так как монет теперь больше 5)
+
+            // Блокируем кнопку "Погладить" на 15 минут (900 000 миллисекунд)
+            petBtn.disabled = true;
+            petBtn.style.opacity = "0.5"; // Делаем её полупрозрачной
+            petBtn.innerText = "Обиделся...";
+
+            // Таймер обиды
+            setTimeout(() => {
+                isOffended = false;
+                petBtn.disabled = false;
+                petBtn.style.opacity = "1";
+                petBtn.innerText = "Погладить (+2🪙)";
+                updateUI();
+            }, 900000); // 15 минут
         });
 
         // Запуск при старте
