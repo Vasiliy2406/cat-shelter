@@ -202,8 +202,7 @@
     <!-- Твой скрипт останется ниже -->
 
     <script>
-        // Загружаем сохраненные данные или ставим значения по умолчанию
-                // Безопасная загрузка данных
+                // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
         let energy = Number(localStorage.getItem('energy'));
@@ -216,6 +215,27 @@
         let maxEnergy = 10;
         let isOffended = false;  
 
+        // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
+        let lastTime = Number(localStorage.getItem('lastTime'));
+        
+        if (!isNaN(lastTime) && lastTime > 0) {
+            let timePassed = Date.now() - lastTime; // Разница в миллисекундах
+            let secondsPassed = Math.floor(timePassed / 1000);
+
+            // 1. Восстановление энергии (1 единица за 15 секунд для теста)
+            let energyToAdd = Math.floor(secondsPassed / 15);
+            if (energyToAdd > 0) {
+                energy = Math.min(maxEnergy, energy + energyToAdd); 
+            }
+
+            // 2. Уменьшение сытости (1 единица за 3 секунды)
+            let satietyToRemove = Math.floor(secondsPassed / 3);
+            if (satietyToRemove > 0) {
+                satiety = Math.max(0, satiety - satietyToRemove); 
+            }
+        }
+
+        // Получаем элементы на странице
         const satietyEl = document.getElementById('satiety');
         const coinsEl = document.getElementById('coins');
         const energyEl = document.getElementById('energy-text');
@@ -225,10 +245,12 @@
         const helpBtn = document.getElementById('help-btn');
 
         // 1. СНАЧАЛА функция сохранения
-        function saveGame() {
+            function saveGame() {
             localStorage.setItem('satiety', satiety);
             localStorage.setItem('coins', coins);
             localStorage.setItem('energy', energy);
+            // ДОБАВЛЯЕМ СОХРАНЕНИЕ ВРЕМЕНИ
+            localStorage.setItem('lastTime', Date.now());
         }
 
         // 2. ПОТОМ функция обновления интерфейса
