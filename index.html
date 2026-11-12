@@ -59,23 +59,31 @@
             gap: 15px;
         }
 
-        button {
+                button {
             font-family: 'Press Start 2P', cursive;
             background-color: #4caf50;
             color: white;
             border: none;
-            padding: 15px 20px;
+            padding: 15px 10px;
             font-size: 10px;
             cursor: pointer;
-            box-shadow: 4px 4px 0 #2e7d32;
-            transition: transform 0.1s;
+            box-shadow: 4px 4px 0 #2e7d32; /* Темно-зеленая тень для всех */
+            transition: transform 0.1s, box-shadow 0.1s;
+            flex: 1;
+            white-space: nowrap;
+            text-align: center;
         }
 
+        /* Эффект нажатия: кнопка сдвигается, тень исчезает */
         button:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0 0 0 #2e7d32;
+            transform: translate(4px, 4px); /* Сдвиг на размер тени */
+            box-shadow: 0 0 0 transparent; /* Прозрачная тень */
         }
-
+        
+        /* Убедимся, что у кнопки еды нет жестко заданной тени в CSS */
+        #feed-btn {
+            background-color: #4caf50; 
+        }
     </style>
 </head>
 <body>
@@ -109,14 +117,12 @@
             hungerEl.innerText = Math.floor(hunger);
             coinsEl.innerText = coins;
             
-                        // Меняем цвет кнопки "Покормить" и её тени в зависимости от голода
+            // Меняем цвет кнопки "Покормить" (тень трогать не будем)
             const feedBtn = document.getElementById('feed-btn');
             if (hunger < 30) {
-                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый фон
-                feedBtn.style.boxShadow = '4px 4px 0 #e65100'; // Темно-оранжевая тень
+                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый
             } else {
-                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый фон
-                feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; // Темно-зеленая тень
+                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый
             }
 
             // МЕНЯЕМ КАРТИНКУ КОТА
