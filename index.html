@@ -76,8 +76,6 @@
             box-shadow: 0 0 0 #2e7d32;
         }
 
-        /* Кнопка еды красная, если кот голоден */
-        #feed-btn { background-color: #f44336; box-shadow: 4px 4px 0 #b71c1c; }
     </style>
 </head>
 <body>
@@ -97,7 +95,7 @@
         <button id="pet-btn">Погладить (+2🪙)</button>
     </div>
 
-    <script>
+        <script>
         // Начальные значения
         let hunger = 100; // Максимум 100
         let coins = 0;
@@ -111,11 +109,21 @@
             hungerEl.innerText = Math.floor(hunger);
             coinsEl.innerText = coins;
             
-            // Меняем цвет кнопки, если кот очень голоден
+                        // Меняем цвет кнопки "Покормить" и её тени в зависимости от голода
+            const feedBtn = document.getElementById('feed-btn');
             if (hunger < 30) {
-                document.getElementById('feed-btn').style.backgroundColor = '#ff9800'; // Оранжевый
+                feedBtn.style.backgroundColor = '#ff9800'; // Оранжевый фон
+                feedBtn.style.boxShadow = '4px 4px 0 #e65100'; // Темно-оранжевая тень
             } else {
-                document.getElementById('feed-btn').style.backgroundColor = '#4caf50'; // Зеленый
+                feedBtn.style.backgroundColor = '#4caf50'; // Зеленый фон
+                feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; // Темно-зеленая тень
+            }
+
+            // МЕНЯЕМ КАРТИНКУ КОТА
+            if (hunger < 30) {
+                catImg.src = 'cat_sad.png'; // Грустный кот
+            } else {
+                catImg.src = 'cat.png'; // Обычный кот
             }
         }
 
@@ -141,6 +149,12 @@
 
         // Кнопка "Погладить"
         document.getElementById('pet-btn').addEventListener('click', () => {
+            // ПРОВЕРКА: Если кот голоден, он не дает себя гладить
+            if (hunger <= 0) {
+                alert("Кот слишком голоден! Сначала покорми его.");
+                return; // Выходим из функции, монеты не начисляются
+            }
+
             coins += 2;
             // Кот немного теряет голод от активности, но получает монеты
             hunger -= 1; 
