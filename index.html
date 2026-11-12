@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Приют Котов</title>
-    <!-- Подключаем пиксельный шрифт -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
         body {
@@ -21,7 +20,6 @@
             user-select: none;
         }
 
-        /* Контейнер для кота, чтобы картинка не размывалась */
         .cat-container {
             width: 200px;
             height: 200px;
@@ -34,11 +32,10 @@
             border-radius: 20px;
         }
 
-        /* Магия пиксель-арта: растягиваем, но сохраняем четкость */
         .cat-container img {
             width: 160px; 
             height: 160px;
-            image-rendering: pixelated; /* Это свойство делает пиксели четкими! */
+            image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
 
@@ -59,7 +56,7 @@
             gap: 15px;
         }
 
-                button {
+        button {
             font-family: 'Press Start 2P', cursive;
             background-color: #4caf50;
             color: white;
@@ -67,24 +64,22 @@
             padding: 15px 10px;
             font-size: 10px;
             cursor: pointer;
-            box-shadow: 4px 4px 0 #2e7d32; /* Темно-зеленая тень для всех */
+            box-shadow: 4px 4px 0 #2e7d32;
             transition: transform 0.1s, box-shadow 0.1s;
             flex: 1;
             white-space: nowrap;
             text-align: center;
         }
 
-        /* Эффект нажатия: кнопка сдвигается, тень исчезает */
         button:active {
-            transform: translate(4px, 4px); /* Сдвиг на размер тени */
-            box-shadow: 0 0 0 transparent !important; /* !important перебивает JS-стиль */
+            transform: translate(4px, 4px);
+            box-shadow: 0 0 0 transparent !important;
         }
         
-        /* Убедимся, что у кнопки еды нет жестко заданной тени в CSS */
         #feed-btn {
             background-color: #4caf50; 
         }
-                /* Иконка молнии и текст энергии */
+
         .energy-text { 
             color: #00bfff; 
             font-size: 12px; 
@@ -98,7 +93,6 @@
             margin-bottom: 2px;
         }
 
-        /* Стиль для заблокированных кнопок */
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -114,24 +108,22 @@
     </div>
 
     <div class="cat-container">
-        <!-- Сюда вставляется твоя картинка -->
         <img src="cat.png" alt="Котик" id="cat-img">
     </div>
 
-        <div class="buttons">
+    <div class="buttons">
         <button id="feed-btn">Покормить (5🪙)</button>
         <button id="pet-btn">Погладить (+2🪙)</button>
-        <!-- Новая кнопка помощи -->
         <button id="help-btn" style="display: none; background-color: #2196f3; box-shadow: 4px 4px 0 #0d47a1;">Помощь (25🪙)</button>
     </div>
 
-            <script>
-                // Загружаем сохраненные данные или ставим значения по умолчанию
+    <script>
+        // Загружаем сохраненные данные или ставим значения по умолчанию
         let satiety = parseInt(localStorage.getItem('satiety')) ?? 100;
         let coins = parseInt(localStorage.getItem('coins')) ?? 0;
         let energy = parseInt(localStorage.getItem('energy')) ?? 10;
         let maxEnergy = 10;
-        let isOffended = false; // Обиду не сохраняем, чтобы игрок не застрял навсегда  
+        let isOffended = false; 
 
         const satietyEl = document.getElementById('satiety');
         const coinsEl = document.getElementById('coins');
@@ -141,7 +133,15 @@
         const petBtn = document.getElementById('pet-btn');
         const helpBtn = document.getElementById('help-btn');
 
-                        function updateUI() {
+        // 1. СНАЧАЛА функция сохранения
+        function saveGame() {
+            localStorage.setItem('satiety', satiety);
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('energy', energy);
+        }
+
+        // 2. ПОТОМ функция обновления интерфейса
+        function updateUI() {
             satietyEl.innerText = Math.floor(satiety);
             coinsEl.innerText = coins;
             energyEl.innerText = energy;
@@ -155,12 +155,12 @@
                 feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; 
             }
 
-            // Картинка кота
+            // Картинка кота (упрощенная, чтобы не мешать анимации еды)
             if (satiety < 30) {
                 catImg.src = 'cat_sad.png'; 
             } else {
-                // Если кот не ест прямо сейчас, ставим обычную картинку
-                if (catImg.src !== 'cat_eat.png') {
+                // Ставим обычную картинку, если кот сейчас не ест
+                if (catImg.src.indexOf('cat_eat.png') === -1) {
                     catImg.src = 'cat.png'; 
                 }
             }
@@ -185,17 +185,10 @@
                 petBtn.innerText = "Погладить (+2🪙)";
             }
 
-            saveGame(); // Сохраняем каждое изменение (ВОТ ЗДЕСЬ)
+            saveGame(); // Сохраняем в самом конце
         }
 
-        // А вот функция сохранения должна идти СРАЗУ ПОСЛЕ updateUI
-        function saveGame() {
-            localStorage.setItem('satiety', satiety);
-            localStorage.setItem('coins', coins);
-            localStorage.setItem('energy', energy);
-        }
-
-                // Кот теряет сытость
+        // Кот теряет сытость
         setInterval(() => {
             if (satiety > 0) {
                 satiety -= 1;
@@ -211,7 +204,7 @@
             }
         }, 15000);
 
-                // Покормить
+        // Покормить
         feedBtn.addEventListener('click', () => {
             if (isOffended) {
                 alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
@@ -242,9 +235,9 @@
                 alert("Кот слишком голоден! Сначала покорми его.");
                 return;
             }
-            if (energy <= 0) return; // Защита от кликов, если нет энергии
+            if (energy <= 0) return; 
 
-            energy -= 1; // Тратим энергию
+            energy -= 1; 
             coins += 2;
             satiety -= 1; 
             if (satiety < 0) satiety = 0;
@@ -267,10 +260,9 @@
             petBtn.disabled = true;
             petBtn.innerText = "Обиделся...";
 
-            // Таймер обиды (Сейчас стоит 15 секунд для теста!)
             setTimeout(() => {
                 isOffended = false;
-                updateUI(); // Вернет кнопку в нормальное состояние
+                updateUI(); 
             }, 15000); 
         });
 
