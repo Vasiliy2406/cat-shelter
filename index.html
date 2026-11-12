@@ -158,12 +158,23 @@
             }
         }, 3000);
 
-        // Покормить
+                // Покормить
         feedBtn.addEventListener('click', () => {
+            // Если кот обижен, он отказывается есть
+            if (isOffended) {
+                alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
+                return; // Выходим, монеты не тратим, голод не растет
+            }
+
             if (coins >= 5) {
                 coins -= 5;
                 hunger += 20; 
                 if (hunger > 100) hunger = 100; 
+                
+                // Анимация поедания (опционально)
+                catImg.style.transform = "scale(1.2)";
+                setTimeout(() => { catImg.style.transform = "scale(1)"; }, 200);
+                
                 updateUI();
             } else {
                 alert("Не хватает монет! Гладь кота, чтобы заработать.");
@@ -210,7 +221,7 @@
                 petBtn.style.opacity = "1";
                 petBtn.innerText = "Погладить (+2🪙)";
                 updateUI();
-            }, 900000); // 15 минут
+            }, 15000); // 15 минут
         });
 
         // Запуск при старте
