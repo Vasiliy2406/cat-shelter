@@ -97,25 +97,109 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+                /* Стили для экранов */
+        .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center;}
+        .screen.active { display: flex; }
+
+        /* Навигация */
+        .nav-bar { position: absolute; bottom: 20px; display: flex; gap: 10px; width: 90%; }
+        .nav-btn { background-color: #333; color: white; font-size: 10px; padding: 10px; box-shadow: none; border: 2px solid #555; }
+        .nav-btn.active { background-color: #555; border-color: #fff; }
+
+        /* Магазин */
+        .shop-grid { display: flex; gap: 15px; margin-top: 20px; }
+        .shop-item { background: #333; padding: 15px; border-radius: 10px; text-align: center; border: 2px solid #555; }
+        
+        /* Гардероб */
+        .wardrobe-grid { display: flex; gap: 15px; margin-top: 20px; }
+        .wardrobe-item { background: #333; padding: 15px; border-radius: 10px; text-align: center; border: 2px solid #555; position: relative; cursor: pointer; }
+        .wardrobe-item.selected { border-color: #4caf50; }
+        .wardrobe-item.locked { opacity: 0.3; pointer-events: none; } /* Если не куплено - нельзя нажать */
+        .check { position: absolute; top: -10px; right: -10px; font-size: 20px; display: none; }
+        .wardrobe-item.selected .check { display: block; }
     </style>
 </head>
 <body>
 
-    <div class="stats">
-        Сытость: <span id="satiety">100</span>%<br>
-        Монеты: <span class="coins" id="coins">0</span> 🪙<br>
-        Энергия: <span class="energy-text" id="energy-text">10</span> <img src="lightning.png" class="energy-icon" alt="⚡">
+    <!-- ЭКРАН 1: ИГРА -->
+    <div id="screen-game" class="screen active">
+        <div class="stats">
+            Сытость: <span id="satiety">100</span>%<br>
+            Монеты: <span class="coins" id="coins">0</span> 🪙<br>
+            Энергия: <span class="energy-text" id="energy-text">10</span> <img src="lightning.png" class="energy-icon" alt="⚡">
+        </div>
+
+        <div class="cat-container">
+            <img src="cat.png" alt="Котик" id="cat-img">
+        </div>
+
+        <div class="buttons">
+            <button id="feed-btn">Покормить (5🪙)</button>
+            <button id="pet-btn">Погладить (+2🪙)</button>
+            <button id="help-btn" style="display: none; background-color: #2196f3; box-shadow: 4px 4px 0 #0d47a1;">Помощь (25🪙)</button>
+        </div>
+        
+        <!-- Кнопки навигации -->
+        <div class="nav-bar">
+            <button class="nav-btn active" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+        </div>
     </div>
 
-    <div class="cat-container">
-        <img src="cat.png" alt="Котик" id="cat-img">
+    <!-- ЭКРАН 2: МАГАЗИН -->
+    <div id="screen-shop" class="screen">
+        <h2>Магазин</h2>
+        <div class="stats">Монеты: <span class="coins shop-coins">0</span> 🪙</div>
+        
+        <div class="shop-grid">
+            <div class="shop-item">
+                <span style="font-size: 40px;">🔴</span>
+                <p>Красный ошейник</p>
+                <button onclick="buyItem('collar_red', 50)">Купить (50🪙)</button>
+            </div>
+            <div class="shop-item">
+                <span style="font-size: 40px;">🟢</span>
+                <p>Зеленая миска</p>
+                <button onclick="buyItem('bowl_green', 30)">Купить (30🪙)</button>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn active" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+        </div>
     </div>
 
-    <div class="buttons">
-        <button id="feed-btn">Покормить (5🪙)</button>
-        <button id="pet-btn">Погладить (+2🪙)</button>
-        <button id="help-btn" style="display: none; background-color: #2196f3; box-shadow: 4px 4px 0 #0d47a1;">Помощь (25🪙)</button>
+    <!-- ЭКРАН 3: ГАРДЕРОБ -->
+    <div id="screen-wardrobe" class="screen">
+        <h2>Гардероб</h2>
+        <div class="stats">Выбери, что надеть</div>
+        
+        <div class="wardrobe-grid">
+            <!-- По умолчанию -->
+            <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
+                <span style="font-size: 40px;">❌</span>
+                <p>Без ошейника</p>
+                <span class="check">✅</span>
+            </div>
+            <!-- Красный ошейник (появится, если куплен) -->
+            <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
+                <span style="font-size: 40px;">🔴</span>
+                <p>Красный</p>
+                <span class="check" style="display: none;">✅</span>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn active" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+        </div>
     </div>
+
+    <!-- Твой скрипт останется ниже -->
 
     <script>
         // Загружаем сохраненные данные или ставим значения по умолчанию
@@ -275,6 +359,71 @@
 
         // Запуск при старте
         updateUI();
+                // --- СИСТЕМА МАГАЗИНА И ГАРДЕРОБА ---
+        
+        // Переключение вкладок
+        function switchTab(tabName) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + tabName).classList.add('active');
+            
+            // Обновляем кнопки меню
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
+
+            // Обновляем монеты в магазине, если мы туда зашли
+            if (tabName === 'shop') {
+                document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
+            }
+        }
+
+        // Покупка предмета
+        function buyItem(itemId, price) {
+            if (coins >= price) {
+                coins -= price;
+                updateUI(); // Обновляем счетчик
+                alert("Покупка успешна! Предмет добавлен в гардероб.");
+                
+                // Разблокируем предмет в гардеробе
+                const wardrobeItem = document.getElementById('item-' + itemId);
+                if (wardrobeItem) {
+                    wardrobeItem.classList.remove('locked');
+                }
+                
+                // Сохраняем покупку в память (чтобы не пропало)
+                localStorage.setItem('item_' + itemId, 'true');
+            } else {
+                alert("Не хватает монет!");
+            }
+        }
+
+        // Надеть предмет
+        let currentCollar = 'none';
+        function equipItem(type, itemId) {
+            if (type === 'collar') {
+                currentCollar = itemId;
+                
+                // Визуально выделяем выбранный предмет
+                document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => el.classList.remove('selected'));
+                event.currentTarget.classList.add('selected');
+                
+                // Меняем картинку кота (Здесь будет твоя магия с картинками)
+                if (itemId === 'collar_red') {
+                    catImg.src = 'cat_red_collar.png'; // Ты нарисуешь эту картинку!
+                } else {
+                    // Если сняли ошейник (none)
+                    if (catImg.src.includes('cat_red_collar.png')) {
+                        catImg.src = 'cat.png'; 
+                    }
+                }
+            }
+        }
+
+        // Проверяем при запуске, какие предметы уже куплены (загружаем из памяти)
+        window.onload = () => {
+            if (localStorage.getItem('item_collar_red') === 'true') {
+                document.getElementById('item-collar_red').classList.remove('locked');
+            }
+        };
     </script>
 </body>
 </html>
