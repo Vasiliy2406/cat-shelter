@@ -119,11 +119,18 @@
 
     <script>
         // Загружаем сохраненные данные или ставим значения по умолчанию
-        let satiety = parseInt(localStorage.getItem('satiety')) ?? 100;
-        let coins = parseInt(localStorage.getItem('coins')) ?? 0;
-        let energy = parseInt(localStorage.getItem('energy')) ?? 10;
+                // Безопасная загрузка данных
+        let satiety = Number(localStorage.getItem('satiety'));
+        let coins = Number(localStorage.getItem('coins'));
+        let energy = Number(localStorage.getItem('energy'));
+
+        // Если данные битые (NaN) или их нет, ставим стандартные
+        if (isNaN(satiety)) satiety = 100;
+        if (isNaN(coins)) coins = 0;
+        if (isNaN(energy)) energy = 10;
+
         let maxEnergy = 10;
-        let isOffended = false; 
+        let isOffended = false;  
 
         const satietyEl = document.getElementById('satiety');
         const coinsEl = document.getElementById('coins');
