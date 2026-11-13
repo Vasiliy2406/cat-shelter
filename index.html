@@ -218,11 +218,12 @@
         let maxEnergy = 10;
         let isOffended = false;  
 
-        // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
+                // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
         let lastTime = Number(localStorage.getItem('lastTime'));
         
+        // Проверяем: если lastTime существует и это нормальное число (игра уже запускалась)
         if (!isNaN(lastTime) && lastTime > 0) {
-            let timePassed = Date.now() - lastTime; // Разница в миллисекундах
+            let timePassed = Date.now() - lastTime; 
             let secondsPassed = Math.floor(timePassed / 1000);
 
             // 1. Восстановление энергии (1 единица за 15 секунд для теста)
@@ -234,8 +235,12 @@
             // 2. Уменьшение сытости (1 единица за 300 секунд = 5 минут)
             let satietyToRemove = Math.floor(secondsPassed / 300);
             if (satietyToRemove > 0) {
-                satiety = Math.max(5, satiety - satietyToRemove); // Не падает ниже 5%
+                satiety = Math.max(5, satiety - satietyToRemove); 
             }
+        } else {
+            // ЭТО ПЕРВЫЙ ЗАПУСК! Ничего не вычитаем, ставим всё по умолчанию.
+            satiety = 100;
+            energy = 10;
         }
 
         // Получаем элементы на странице
