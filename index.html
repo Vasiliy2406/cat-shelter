@@ -191,7 +191,7 @@
             </div>
 
             <!-- Миски -->
-            <div class="wardrobe-item" onclick="equipBowl('bowl_red')">
+            <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red')">
                 <span style="font-size: 40px;">🥣</span>
                 <p>Красная миска</p>
                 <span class="check">✅</span>
@@ -439,19 +439,30 @@
         }
 
         // Покупка предмета
-        function buyItem(itemId, price) {
+                function buyItem(itemId, price) {
+            // Проверяем, не куплено ли уже
+            if (localStorage.getItem('item_' + itemId) === 'true') {
+                alert("Вы уже купили этот предмет!");
+                return;
+            }
+
             if (coins >= price) {
                 coins -= price;
-                updateUI(); // Обновляем счетчик
+                updateUI(); 
                 alert("Покупка успешна! Предмет добавлен в гардероб.");
                 
-                // Разблокируем предмет в гардеробе
+                // Разблокируем в гардеробе
                 const wardrobeItem = document.getElementById('item-' + itemId);
-                if (wardrobeItem) {
-                    wardrobeItem.classList.remove('locked');
-                }
+                if (wardrobeItem) wardrobeItem.classList.remove('locked');
                 
-                // Сохраняем покупку в память (чтобы не пропало)
+                // Меняем кнопку в магазине на "Куплено"
+                event.currentTarget.innerText = "Уже куплено";
+                event.currentTarget.disabled = true;
+                event.currentTarget.style.backgroundColor = '#555';
+                event.currentTarget.style.boxShadow = '4px 4px 0 #222';
+                event.currentTarget.style.color = '#aaa';
+
+                // Сохраняем в память
                 localStorage.setItem('item_' + itemId, 'true');
             } else {
                 alert("Не хватает монет!");
@@ -463,21 +474,22 @@
             if (type === 'collar') {
                 currentCollar = itemId;
                 
-                // Визуально выделяем выбранный предмет
+                // Снимаем выделение ТОЛЬКО с ошейников
                 document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => {
-                    el.classList.remove('selected');
-                    // Прячем все галочки
-                    const check = el.querySelector('.check');
-                    if (check) check.style.display = 'none';
+                    if (el.getAttribute('onclick') && el.getAttribute('onclick').includes('equipItem')) {
+                        el.classList.remove('selected');
+                        const check = el.querySelector('.check');
+                        if (check) check.style.display = 'none';
+                    }
                 });
 
-                // Добавляем выделение и галочку текущему предмету
+                // Добавляем выделение текущему ошейнику
                 event.currentTarget.classList.add('selected');
                 const currentCheck = event.currentTarget.querySelector('.check');
                 if (currentCheck) currentCheck.style.display = 'block';
                 
-                updateCatImage(); // Вызываем генератор!
-                saveGame(); // Сохраняем выбор
+                updateCatImage(); 
+                saveGame(); 
             }
         }
                 // Надеть миску
@@ -541,6 +553,27 @@
             if (targetBowl) {
                 targetBowl.classList.add('selected');
                 targetBowl.querySelector('.check').style.display = 'block';
+            }
+                        // 4. Обновляем кнопки в магазине, если предметы уже куплены
+            if (localStorage.getItem('item_collar_red') === 'true') {
+                const shopCollarBtn = document.querySelector('button[onclick*="collar_red"]');
+                if (shopCollarBtn) {
+                    shopCollarBtn.innerText = "Уже куплено";
+                    shopCollarBtn.disabled = true;
+                    shopCollarBtn.style.backgroundColor = '#555';
+                    shopCollarBtn.style.boxShadow = '4px 4px 0 #222';
+                    shopCollarBtn.style.color = '#aaa';
+                }
+            }
+            if (localStorage.getItem('item_bowl_green') === 'true') {
+                const shopBowlBtn = document.querySelector('button[onclick*="bowl_green"]');
+                if (shopBowlBtn) {
+                    shopBowlBtn.innerText = "Уже куплено";
+                    shopBowlBtn.disabled = true;
+                    shopBowlBtn.style.backgroundColor = '#555';
+                    shopBowlBtn.style.boxShadow = '4px 4px 0 #222';
+                    shopBowlBtn.style.color = '#aaa';
+                }
             }
         };
     </script>
