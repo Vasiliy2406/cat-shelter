@@ -203,6 +203,7 @@
 
     <script>
         let isEating = false; // Ест ли кот прямо сейчас
+        let currentCollar = localStorage.getItem('currentCollar') || 'none';
                 // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
@@ -253,6 +254,22 @@
             localStorage.setItem('energy', energy);
             // ДОБАВЛЯЕМ СОХРАНЕНИЕ ВРЕМЕНИ
             localStorage.setItem('lastTime', Date.now());
+            localStorage.setItem('currentCollar', currentCollar);
+        }
+        // Генератор правильной картинки кота
+        function updateCatImage() {
+            if (isEating) return; // Если ест - не мешаем анимации
+
+            // Если кот голодный (сытость < 30)
+            if (satiety < 30) {
+                if (currentCollar === 'collar_red') catImg.src = 'cat_sad_red_collar.png'; 
+                else catImg.src = 'cat_sad.png';
+            } 
+            // Если кот сытый
+            else {
+                if (currentCollar === 'collar_red') catImg.src = 'cat_red_collar.png'; 
+                else catImg.src = 'cat.png';
+            }
         }
 
         // 2. ПОТОМ функция обновления интерфейса
@@ -271,14 +288,7 @@
             }
 
             // Картинка кота
-            if (isEating) {
-                // Если кот ест, мы НЕ МЕНЯЕМ картинку, пусть доиграет анимацию
-                return; 
-            } else if (satiety < 30) {
-                catImg.src = 'cat_sad.png'; 
-            } else {
-                catImg.src = 'cat.png'; 
-            }
+            updateCatImage(); // Просто вызываем генератор
 
             // ЛОГИКА КНОПКИ ПОМОЩИ
             if (satiety <= 0 && coins < 5 && !isOffended) {
@@ -335,11 +345,10 @@
                 isEating = true;
                 catImg.src = 'cat_eat.png'; 
                 
-                // Через 1 секунду выключаем флаг и возвращаем нормальную картинку
+                                // Через 1 секунду выключаем флаг
                 setTimeout(() => { 
                     isEating = false;
-                    // Вызываем обновление интерфейса, чтобы он сам поставил нужную картинку
-                    updateUI(); 
+                    updateCatImage(); // Возвращаем картинку через генератор
                 }, 1000);
                 
                 updateUI();
@@ -426,24 +435,25 @@
         }
 
         // Надеть предмет
-        let currentCollar = 'none';
-        function equipItem(type, itemId) {
+                function equipItem(type, itemId) {
             if (type === 'collar') {
                 currentCollar = itemId;
                 
                 // Визуально выделяем выбранный предмет
-                document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => el.classList.remove('selected'));
+                document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => {
+                    el.classList.remove('selected');
+                    // Прячем все галочки
+                    const check = el.querySelector('.check');
+                    if (check) check.style.display = 'none';
+                });
+
+                // Добавляем выделение и галочку текущему предмету
                 event.currentTarget.classList.add('selected');
+                const currentCheck = event.currentTarget.querySelector('.check');
+                if (currentCheck) currentCheck.style.display = 'block';
                 
-                // Меняем картинку кота (Здесь будет твоя магия с картинками)
-                if (itemId === 'collar_red') {
-                    catImg.src = 'cat_red_collar.png'; // Ты нарисуешь эту картинку!
-                } else {
-                    // Если сняли ошейник (none)
-                    if (catImg.src.includes('cat_red_collar.png')) {
-                        catImg.src = 'cat.png'; 
-                    }
-                }
+                updateCatImage(); // Вызываем генератор!
+                saveGame(); // Сохраняем выбор
             }
         }
 
