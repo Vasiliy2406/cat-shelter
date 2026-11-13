@@ -177,17 +177,28 @@
         <h2>Гардероб</h2>
         <div class="stats">Выбери, что надеть</div>
         
-        <div class="wardrobe-grid">
-            <!-- По умолчанию -->
+                <div class="wardrobe-grid">
+            <!-- Ошейники -->
             <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
                 <span style="font-size: 40px;">❌</span>
                 <p>Без ошейника</p>
                 <span class="check">✅</span>
             </div>
-            <!-- Красный ошейник (появится, если куплен) -->
             <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
                 <span style="font-size: 40px;">🔴</span>
                 <p>Красный</p>
+                <span class="check" style="display: none;">✅</span>
+            </div>
+
+            <!-- Миски -->
+            <div class="wardrobe-item" onclick="equipBowl('bowl_red')">
+                <span style="font-size: 40px;">🥣</span>
+                <p>Красная миска</p>
+                <span class="check">✅</span>
+            </div>
+            <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green')">
+                <span style="font-size: 40px;">🥣</span>
+                <p>Зеленая миска</p>
                 <span class="check" style="display: none;">✅</span>
             </div>
         </div>
@@ -204,6 +215,7 @@
     <script>
         let isEating = false; // Ест ли кот прямо сейчас
         let currentCollar = localStorage.getItem('currentCollar') || 'none';
+        let currentBowl = localStorage.getItem('currentBowl') || 'bowl_red'; // По умолчанию красная
                 // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
@@ -260,6 +272,7 @@
             // ДОБАВЛЯЕМ СОХРАНЕНИЕ ВРЕМЕНИ
             localStorage.setItem('lastTime', Date.now());
             localStorage.setItem('currentCollar', currentCollar);
+            localStorage.setItem('currentBowl', currentBowl);
         }
         // Генератор правильной картинки кота
         function updateCatImage() {
@@ -348,9 +361,15 @@
                 
                 // Включаем флаг "ест"
                 isEating = true;
-                catImg.src = 'cat_eat.png'; 
                 
-                                // Через 1 секунду выключаем флаг
+                // Выбираем картинку в зависимости от миски
+                if (currentBowl === 'bowl_green') {
+                    catImg.src = 'cat_eat_green_bowl.png';
+                } else {
+                    catImg.src = 'cat_eat.png'; // По умолчанию красная
+                }
+                
+                // Через 1 секунду выключаем флаг
                 setTimeout(() => { 
                     isEating = false;
                     updateCatImage(); // Возвращаем картинку через генератор
@@ -461,40 +480,67 @@
                 saveGame(); // Сохраняем выбор
             }
         }
+                // Надеть миску
+        function equipBowl(bowlId) {
+            currentBowl = bowlId;
+            
+            // Визуально выделяем выбранную миску
+            // (Находим все элементы гардероба с мисками и убираем выделение)
+            document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => {
+                if (el.getAttribute('onclick') && el.getAttribute('onclick').includes('equipBowl')) {
+                    el.classList.remove('selected');
+                    const check = el.querySelector('.check');
+                    if (check) check.style.display = 'none';
+                }
+            });
+
+            // Добавляем выделение текущей миске
+            event.currentTarget.classList.add('selected');
+            const currentCheck = event.currentTarget.querySelector('.check');
+            if (currentCheck) currentCheck.style.display = 'block';
+            
+            saveGame(); // Сохраняем выбор
+        }
 
                 // Проверяем при запуске, какие предметы уже куплены и что надето
+                // Проверяем при запуске, какие предметы куплены и что надето
         window.onload = () => {
-            // 1. Загружаем купленные предметы
+            // 1. Разблокируем купленные предметы
             if (localStorage.getItem('item_collar_red') === 'true') {
                 const collarBtn = document.getElementById('item-collar_red');
                 if (collarBtn) collarBtn.classList.remove('locked');
             }
+            if (localStorage.getItem('item_bowl_green') === 'true') {
+                const bowlBtn = document.getElementById('item-bowl_green');
+                if (bowlBtn) bowlBtn.classList.remove('locked');
+            }
 
-            // 2. Синхронизируем галочку в гардеробе с тем, что надето на коте
+            // 2. Синхронизируем галочки
             const allItems = document.querySelectorAll('#screen-wardrobe .wardrobe-item');
-            
             allItems.forEach(el => {
-                // Убираем выделение и прячем галочки у всех
                 el.classList.remove('selected');
                 const check = el.querySelector('.check');
                 if (check) check.style.display = 'none';
             });
 
-            // Находим нужный предмет и выделяем его
-            let targetItem = null;
-            if (currentCollar === 'collar_red') {
-                targetItem = document.getElementById('item-collar_red');
-            } else {
-                // Если ошейник не надет, выделяем кнопку "Без ошейника"
-                // (она у тебя первая в списке, но лучше добавить ей id для надежности)
-                targetItem = document.querySelector('#screen-wardrobe .wardrobe-item[onclick*="none"]');
+            // Выделяем ошейник
+            let targetCollar = (currentCollar === 'collar_red') 
+                ? document.getElementById('item-collar_red') 
+                : document.querySelector('#screen-wardrobe .wardrobe-item[onclick*="none"]');
+            
+            if (targetCollar) {
+                targetCollar.classList.add('selected');
+                targetCollar.querySelector('.check').style.display = 'block';
             }
 
-            // Если нашли нужный элемент, ставим на него галочку
-            if (targetItem) {
-                targetItem.classList.add('selected');
-                const check = targetItem.querySelector('.check');
-                if (check) check.style.display = 'block';
+            // Выделяем миску
+            let targetBowl = (currentBowl === 'bowl_green')
+                ? document.getElementById('item-bowl_green')
+                : document.querySelector('#screen-wardrobe .wardrobe-item[onclick*="bowl_red"]');
+            
+            if (targetBowl) {
+                targetBowl.classList.add('selected');
+                targetBowl.querySelector('.check').style.display = 'block';
             }
         };
     </script>
