@@ -117,6 +117,13 @@
         .wardrobe-item.locked { opacity: 0.3; pointer-events: none; } /* Если не куплено - нельзя нажать */
         .check { position: absolute; top: -10px; right: -10px; font-size: 20px; display: none; }
         .wardrobe-item.selected .check { display: block; }
+        .item-icon {
+            width: 48px; 
+            height: 48px;
+            image-rendering: pixelated; /* Чтобы пиксели были четкими */
+            image-rendering: crisp-edges;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -154,12 +161,12 @@
         
         <div class="shop-grid">
             <div class="shop-item">
-                <span style="font-size: 40px;">🔴</span>
+                <img src="red_collar.png" class="item-icon" alt="Ошейник">
                 <p>Красный ошейник</p>
                 <button onclick="buyItem('collar_red', 50)">Купить (50🪙)</button>
             </div>
             <div class="shop-item">
-                <span style="font-size: 40px;">🟢</span>
+                <img src="green_bowl.png" class="item-icon" alt="Миска">
                 <p>Зеленая миска</p>
                 <button onclick="buyItem('bowl_green', 30)">Купить (30🪙)</button>
             </div>
@@ -180,25 +187,25 @@
                 <div class="wardrobe-grid">
             <!-- Ошейники -->
             <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
-                <span style="font-size: 40px;">❌</span>
+                <span style="font-size: 40px; display: block; height: 48px;">❌</span> <!-- Оставляем крестик, для "без ошейника" картинка не нужна -->
                 <p>Без ошейника</p>
                 <span class="check">✅</span>
             </div>
             <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
-                <span style="font-size: 40px;">🔴</span>
+                <img src="red_collar.png" class="item-icon" alt="Красный ошейник">
                 <p>Красный</p>
                 <span class="check" style="display: none;">✅</span>
             </div>
 
-            <!-- Миски -->
+                        <!-- Миски -->
             <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red')">
-                <span style="font-size: 40px;">🥣</span>
-                <p>Красная миска</p>
+                <img src="red_bowl.png" class="item-icon" alt="Красная миска">
+                <p>Красная</p>
                 <span class="check">✅</span>
             </div>
             <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green')">
-                <span style="font-size: 40px;">🥣</span>
-                <p>Зеленая миска</p>
+                <img src="green_bowl.png" class="item-icon" alt="Зеленая миска">
+                <p>Зеленая</p>
                 <span class="check" style="display: none;">✅</span>
             </div>
         </div>
