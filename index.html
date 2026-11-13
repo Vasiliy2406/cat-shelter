@@ -97,32 +97,102 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
-                /* Стили для экранов */
-        .screen { display: none; flex-direction: column; align-items: center; width: 100%; height: 100%; justify-content: center;}
-        .screen.active { display: flex; }
 
         /* Навигация */
         .nav-bar { position: absolute; bottom: 20px; display: flex; gap: 10px; width: 90%; }
         .nav-btn { background-color: #333; color: white; font-size: 10px; padding: 10px; box-shadow: none; border: 2px solid #555; }
         .nav-btn.active { background-color: #555; border-color: #fff; }
 
-        /* Магазин */
-        .shop-grid { display: flex; gap: 15px; margin-top: 20px; }
-        .shop-item { background: #333; padding: 15px; border-radius: 10px; text-align: center; border: 2px solid #555; }
-        
-        /* Гардероб */
-        .wardrobe-grid { display: flex; gap: 15px; margin-top: 20px; }
-        .wardrobe-item { background: #333; padding: 15px; border-radius: 10px; text-align: center; border: 2px solid #555; position: relative; cursor: pointer; }
+        /* Стили для экранов (скролл) */
+        .screen { 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            width: 100%; 
+            height: 100vh; 
+            justify-content: flex-start; /* Прижимаем к верху */
+            padding-top: 20px;
+            overflow: hidden;
+        }
+        .screen.active { display: flex; }
+
+        /* Контейнер с прокруткой */
+        .scroll-container {
+            width: 95%;
+            max-width: 500px;
+            flex: 1; /* Занимает всё свободное место */
+            overflow-y: auto; /* Включает вертикальный скролл */
+            padding-bottom: 90px; /* Отступ, чтобы кнопки навигации не перекрывали контент */
+            margin-top: 10px;
+        }
+
+        /* Заголовки разделов */
+        .category-title {
+            font-size: 12px;
+            color: #aaa;
+            margin: 20px 0 10px 0;
+            text-align: left;
+            width: 100%;
+            border-bottom: 2px dashed #444;
+            padding-bottom: 5px;
+        }
+
+        /* Сетка для предметов (2 колонки) */
+        .items-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Две равные колонки */
+            gap: 10px;
+            width: 100%;
+        }
+
+        /* Карточки */
+        .shop-item, .wardrobe-item { 
+            background: #333; 
+            padding: 10px; 
+            border-radius: 10px; 
+            text-align: center; 
+            border: 2px solid #555; 
+            position: relative; 
+            cursor: pointer; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shop-item p, .wardrobe-item p {
+            font-size: 8px; /* Маленький шрифт, чтобы влезало */
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+
+        .shop-item button {
+            padding: 8px 5px;
+            font-size: 8px;
+            box-shadow: 2px 2px 0 #2e7d32;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .item-icon {
+            width: 48px; 
+            height: 48px;
+            image-rendering: pixelated; 
+            image-rendering: crisp-edges;
+            margin-bottom: 5px;
+            object-fit: contain; /* Вписывает картинку в квадрат не искажая */
+        }
+
         .wardrobe-item.selected { border-color: #4caf50; }
-        .wardrobe-item.locked { opacity: 0.3; pointer-events: none; } /* Если не куплено - нельзя нажать */
+        .wardrobe-item.locked { opacity: 0.3; pointer-events: none; }
         .check { position: absolute; top: -10px; right: -10px; font-size: 20px; display: none; }
         .wardrobe-item.selected .check { display: block; }
-        .item-icon {
-            width: 64px; 
-            height: 64px;
-            image-rendering: pixelated; /* Чтобы пиксели были четкими */
-            image-rendering: crisp-edges;
-            margin-bottom: 10px;
+        
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px 5px;
+            font-size: 8px;
         }
     </style>
 </head>
@@ -154,21 +224,28 @@
         </div>
     </div>
 
-    <!-- ЭКРАН 2: МАГАЗИН -->
+        <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="screen-shop" class="screen">
         <h2>Магазин</h2>
         <div class="stats">Монеты: <span class="coins shop-coins">0</span> 🪙</div>
         
-        <div class="shop-grid">
-            <div class="shop-item">
-                <img src="red_collar.png" class="item-icon" alt="Ошейник">
-                <p>Красный ошейник</p>
-                <button onclick="buyItem('collar_red', 50)">Купить (50🪙)</button>
+        <div class="scroll-container">
+            <h3 class="category-title">Ошейники</h3>
+            <div class="items-grid">
+                <div class="shop-item">
+                    <img src="red_collar.png" class="item-icon" alt="Ошейник">
+                    <p>Красный</p>
+                    <button onclick="buyItem('collar_red', 50)" class="buy-btn">Купить (50🪙)</button>
+                </div>
             </div>
-            <div class="shop-item">
-                <img src="green_bowl.png" class="item-icon" alt="Миска">
-                <p>Зеленая миска</p>
-                <button onclick="buyItem('bowl_green', 30)">Купить (30🪙)</button>
+
+            <h3 class="category-title">Миски</h3>
+            <div class="items-grid">
+                <div class="shop-item">
+                    <img src="green_bowl.png" class="item-icon" alt="Миска">
+                    <p>Зеленая</p>
+                    <button onclick="buyItem('bowl_green', 30)" class="buy-btn">Купить (30🪙)</button>
+                </div>
             </div>
         </div>
 
@@ -184,29 +261,35 @@
         <h2>Гардероб</h2>
         <div class="stats">Выбери, что надеть</div>
         
-                <div class="wardrobe-grid">
-            <!-- Ошейники -->
-            <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
-                <span style="font-size: 40px; display: block; height: 48px;">❌</span> <!-- Оставляем крестик, для "без ошейника" картинка не нужна -->
-                <p>Без ошейника</p>
-                <span class="check">✅</span>
-            </div>
-            <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
-                <img src="red_collar.png" class="item-icon" alt="Красный ошейник">
-                <p>Красный</p>
-                <span class="check" style="display: none;">✅</span>
+        <div class="scroll-container">
+            <h3 class="category-title">Ошейники</h3>
+            <div class="items-grid">
+                <!-- Ошейники -->
+                <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
+                    <span style="font-size: 32px; display: block; height: 48px; line-height: 48px;">❌</span>
+                    <p>Без ошейника</p>
+                    <span class="check">✅</span>
+                </div>
+                <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
+                    <img src="red_collar.png" class="item-icon" alt="Красный ошейник">
+                    <p>Красный</p>
+                    <span class="check" style="display: none;">✅</span>
+                </div>
             </div>
 
-                        <!-- Миски -->
-            <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red')">
-                <img src="red_bowl.png" class="item-icon" alt="Красная миска">
-                <p>Красная</p>
-                <span class="check">✅</span>
-            </div>
-            <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green')">
-                <img src="green_bowl.png" class="item-icon" alt="Зеленая миска">
-                <p>Зеленая</p>
-                <span class="check" style="display: none;">✅</span>
+            <h3 class="category-title">Миски</h3>
+            <div class="items-grid">
+                <!-- Миски -->
+                <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red')">
+                    <img src="red_bowl.png" class="item-icon" alt="Красная миска">
+                    <p>Красная</p>
+                    <span class="check">✅</span>
+                </div>
+                <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green')">
+                    <img src="green_bowl.png" class="item-icon" alt="Зеленая миска">
+                    <p>Зеленая</p>
+                    <span class="check" style="display: none;">✅</span>
+                </div>
             </div>
         </div>
 
