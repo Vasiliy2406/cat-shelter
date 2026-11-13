@@ -217,15 +217,13 @@
             Энергия: <span class="energy-text" id="energy-text">10</span> <img src="lightning.png" class="energy-icon" alt="⚡">
         </div>
 
-               <div class="cat-container" style="position: relative;">
-            <!-- Слой 1: База (кот) -->
-            <img src="cat.png" alt="Котик" id="cat-img">
-            
-            <!-- Слой 2: Ошейник -->
-            <img src="red_collar.png" alt="Ошейник" id="collar-layer" class="layer-img" style="display: none; position: absolute; z-index: 5;">
-            
-            <!-- Слой 3: Миска -->
-            <img src="red_bowl_eat.png" alt="Миска" id="bowl-layer" class="layer-img" style="display: none; position: absolute; z-index: 10;">
+        <div class="cat-container" style="position: relative;">
+            <!-- Обертка для анимации -->
+            <div id="cat-wrapper" style="width: 160px; height: 160px; position: relative; transition: transform 0.1s;">
+                <img src="cat.png" alt="Котик" id="cat-img" style="width: 100%; height: 100%; image-rendering: pixelated;">
+                <img src="red_collar.png" alt="Ошейник" id="collar-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; image-rendering: pixelated;">
+                <img src="red_bowl_eat.png" alt="Миска" id="bowl-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; image-rendering: pixelated;">
+            </div>
         </div>
 
         <div class="buttons">
@@ -545,19 +543,15 @@
             satiety -= 1; 
             if (satiety < 0) satiety = 0;
             
-            // Находим слои для анимации
-            const collarLayer = document.getElementById('collar-layer');
-            const bowlLayer = document.getElementById('bowl-layer');
+            // Находим ОБЕРТКУ (а не отдельные слои)
+            const catWrapper = document.getElementById('cat-wrapper');
 
-            // Увеличиваем кота и ошейник
-            catImg.style.transform = "scale(1.1)";
-            // Для ошейника используем translate, чтобы он не съезжал при увеличении
-            collarLayer.style.transform = "scale(1.1) translate(-45%, -45%)"; 
+            // Увеличиваем всю обертку целиком (кот + ошейник + миска двигаются как одно целое)
+            catWrapper.style.transform = "scale(1.1)";
             
             // Возвращаем обратно через 100 мс
             setTimeout(() => { 
-                catImg.style.transform = "scale(1)"; 
-                collarLayer.style.transform = "scale(1) translate(-50%, -50%)";
+                catWrapper.style.transform = "scale(1)"; 
             }, 100);
             
             updateUI();
