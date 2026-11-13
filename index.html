@@ -457,10 +457,39 @@
             }
         }
 
-        // Проверяем при запуске, какие предметы уже куплены (загружаем из памяти)
+                // Проверяем при запуске, какие предметы уже куплены и что надето
         window.onload = () => {
+            // 1. Загружаем купленные предметы
             if (localStorage.getItem('item_collar_red') === 'true') {
-                document.getElementById('item-collar_red').classList.remove('locked');
+                const collarBtn = document.getElementById('item-collar_red');
+                if (collarBtn) collarBtn.classList.remove('locked');
+            }
+
+            // 2. Синхронизируем галочку в гардеробе с тем, что надето на коте
+            const allItems = document.querySelectorAll('#screen-wardrobe .wardrobe-item');
+            
+            allItems.forEach(el => {
+                // Убираем выделение и прячем галочки у всех
+                el.classList.remove('selected');
+                const check = el.querySelector('.check');
+                if (check) check.style.display = 'none';
+            });
+
+            // Находим нужный предмет и выделяем его
+            let targetItem = null;
+            if (currentCollar === 'collar_red') {
+                targetItem = document.getElementById('item-collar_red');
+            } else {
+                // Если ошейник не надет, выделяем кнопку "Без ошейника"
+                // (она у тебя первая в списке, но лучше добавить ей id для надежности)
+                targetItem = document.querySelector('#screen-wardrobe .wardrobe-item[onclick*="none"]');
+            }
+
+            // Если нашли нужный элемент, ставим на него галочку
+            if (targetItem) {
+                targetItem.classList.add('selected');
+                const check = targetItem.querySelector('.check');
+                if (check) check.style.display = 'block';
             }
         };
     </script>
