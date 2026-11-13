@@ -401,9 +401,16 @@
             localStorage.setItem('currentBowl', currentBowl);
         }
         // Генератор правильной картинки кота
-        function updateCatImage() {
+                function updateCatImage() {
             const catImg = document.getElementById('cat-img');
             const collarLayer = document.getElementById('collar-layer');
+
+            // Если кот ест, не трогаем его картинку!
+            if (isEating) {
+                // Но ошейник на время еды прячем
+                collarLayer.style.display = 'none';
+                return; 
+            }
 
             // 1. Ставим базового кота (грустного или веселого)
             if (satiety < 30) {
@@ -493,13 +500,16 @@
                 satiety += 20; 
                 if (satiety > 100) satiety = 100; 
                 
-                // 1. Прячем ошейник на время еды (он же на шее, а шея спрятана)
+                // 1. Включаем флаг, чтобы updateCatImage не мешала анимации
+                isEating = true; 
+                
+                // 2. Прячем ошейник на время еды (он же на шее, а шея спрятана)
                 document.getElementById('collar-layer').style.display = 'none';
                 
-                // 2. Меняем кота на "ест"
+                // 3. Меняем кота на "ест"
                 catImg.src = 'cat_eat.png'; 
                 
-                // 3. Показываем нужную миску
+                // 4. Показываем нужную миску
                 const bowlLayer = document.getElementById('bowl-layer');
                 if (currentBowl === 'bowl_blue') bowlLayer.src = 'blue_bowl_eat.png';
                 else if (currentBowl === 'bowl_green') bowlLayer.src = 'green_bowl_eat.png';
@@ -507,10 +517,11 @@
                 
                 bowlLayer.style.display = 'block';
                 
-                // 4. Через секунду всё убираем
+                // 5. Через секунду всё убираем
                 setTimeout(() => { 
                     bowlLayer.style.display = 'none';
-                    updateCatImage(); // Возвращает кота и ошейник
+                    isEating = false; // Выключаем флаг
+                    updateCatImage(); // Возвращает кота и ошейник в нужное состояние
                 }, 1000);
                 
                 updateUI();
@@ -528,13 +539,26 @@
             }
             if (energy <= 0) return; 
 
+            // Тратим энергию, даем монеты и сытость
             energy -= 1; 
             coins += 2;
             satiety -= 1; 
             if (satiety < 0) satiety = 0;
             
+            // Находим слои для анимации
+            const collarLayer = document.getElementById('collar-layer');
+            const bowlLayer = document.getElementById('bowl-layer');
+
+            // Увеличиваем кота и ошейник
             catImg.style.transform = "scale(1.1)";
-            setTimeout(() => { catImg.style.transform = "scale(1)"; }, 100);
+            // Для ошейника используем translate, чтобы он не съезжал при увеличении
+            collarLayer.style.transform = "scale(1.1) translate(-45%, -45%)"; 
+            
+            // Возвращаем обратно через 100 мс
+            setTimeout(() => { 
+                catImg.style.transform = "scale(1)"; 
+                collarLayer.style.transform = "scale(1) translate(-50%, -50%)";
+            }, 100);
             
             updateUI();
         });
