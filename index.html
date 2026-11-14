@@ -198,9 +198,9 @@
         </div>
         
         <div class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('game')">🏠 Игра</button>
-            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
-            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+            <button class="nav-btn active" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -245,9 +245,9 @@
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
-            <button class="nav-btn active" onclick="switchTab('shop')">🛒 Магазин</button>
-            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+            <button class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button class="nav-btn active" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -302,9 +302,9 @@
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
-            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
-            <button class="nav-btn active" onclick="switchTab('wardrobe')">👕 Гардероб</button>
+            <button class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button class="nav-btn active" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -349,6 +349,22 @@
             localStorage.setItem('lastTime', Date.now());
             localStorage.setItem('currentCollar', currentCollar);
             localStorage.setItem('currentBowl', currentBowl);
+        }
+        function switchTab(tabName, btnElement) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-' + tabName).classList.add('active');
+            
+            // Снимаем подсветку со ВСЕХ кнопок навигации
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // Подсвечиваем ту кнопку, на которую нажали
+            if (btnElement) {
+                btnElement.classList.add('active');
+            }
+
+            if (tabName === 'shop') {
+                document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
+            }
         }
 
         function updateCatImage() {
