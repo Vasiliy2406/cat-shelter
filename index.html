@@ -240,7 +240,7 @@
         </div>
     </div>
 
-        <!-- ЭКРАН 2: МАГАЗИН -->
+    <!-- ЭКРАН 2: МАГАЗИН -->
     <div id="screen-shop" class="screen">
         <h2>Магазин</h2>
         <div class="stats">Монеты: <span class="coins shop-coins">0</span> 🪙</div>
@@ -257,6 +257,11 @@
                     <img src="blue_collar.png" class="item-icon" alt="Ошейник">
                     <p>Синий</p>
                     <button onclick="buyItem('collar_blue', 60)" class="buy-btn">Купить (60🪙)</button>
+                </div>
+                <div class="shop-item">
+                    <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
+                    <p>Желтый</p>
+                    <button onclick="buyItem('collar_yellow', 90)" class="buy-btn">Купить (70🪙)</button>
                 </div>
             </div>
 
@@ -303,6 +308,11 @@
                 <div class="wardrobe-item locked" id="item-collar_blue" onclick="equipItem('collar', 'collar_blue')">
                     <img src="blue_collar.png" class="item-icon" alt="Синий ошейник">
                     <p>Синий</p>
+                    <span class="check" style="display: none;">✅</span>
+                </div>
+                <div class="wardrobe-item locked" id="item-collar_yellow" onclick="equipItem('collar', 'collar_yellow')">
+                    <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
+                    <p>Желтый</p>
                     <span class="check" style="display: none;">✅</span>
                 </div>
             </div>
@@ -423,6 +433,9 @@
                 collarLayer.style.display = 'block';
             } else if (currentCollar === 'collar_blue') {
                 collarLayer.src = 'cat_blue_collar.png'; 
+                collarLayer.style.display = 'block';
+            } else if (currentCollar === 'collar_yellow') {
+                collarLayer.src = 'cat_yellow_collar.png';
                 collarLayer.style.display = 'block';
             } else {
                 collarLayer.style.display = 'none'; // Прячем ошейник
@@ -674,7 +687,7 @@
                 // Проверяем при запуске, какие предметы куплены и что надето
         window.onload = () => {
             // 1. Разблокируем купленные предметы
-            const items = ['collar_red', 'collar_blue', 'bowl_green', 'bowl_blue'];
+            const items = ['collar_red', 'collar_blue', 'collar_yellow' 'bowl_green', 'bowl_blue'];
             items.forEach(item => {
                 if (localStorage.getItem('item_' + item) === 'true') {
                     const el = document.getElementById('item-' + item);
@@ -718,7 +731,7 @@
         function preloadImages() {
             const images = [
                 'cat.png', 'cat_sad.png', 'cat_eat.png',
-                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png',
+                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 'cat_yellow_collar.png'
                 'cat_red_collar.png', 'cat_blue_collar.png'
             ];
             
