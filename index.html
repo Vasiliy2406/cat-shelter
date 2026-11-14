@@ -433,18 +433,6 @@
             saveGame(); 
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById('screen-' + tabName).classList.add('active');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.querySelector(`.nav-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
-
-            if (tabName === 'shop') {
-                document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
-            }
-        }
-
         function buyItem(itemId, price, btnElement) {
             if (localStorage.getItem('item_' + itemId) === 'true') {
                 alert("Вы уже купили этот предмет!");
