@@ -350,18 +350,20 @@
             localStorage.setItem('currentCollar', currentCollar);
             localStorage.setItem('currentBowl', currentBowl);
         }
+
+        // ЕДИНСТВЕННАЯ ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ
         function switchTab(tabName, btnElement) {
+            // 1. Прячем все экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // 2. Показываем нужный
             document.getElementById('screen-' + tabName).classList.add('active');
             
-            // Снимаем подсветку со ВСЕХ кнопок навигации
+            // 3. Снимаем подсветку со ВСЕХ кнопок
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            // Подсвечиваем ту кнопку, на которую нажали
-            if (btnElement) {
-                btnElement.classList.add('active');
-            }
+            // 4. Подсвечиваем нажатую
+            if (btnElement) btnElement.classList.add('active');
 
+            // Обновляем монеты в магазине
             if (tabName === 'shop') {
                 document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
             }
@@ -498,7 +500,7 @@
             saveGame(); 
         }
 
-        // --- ЗАПУСК ИГРЫ (Оборачиваем в DOMContentLoaded, чтобы кнопки точно были готовы) ---
+        // --- ЗАПУСК ИГРЫ ---
         document.addEventListener('DOMContentLoaded', () => {
             
             // Привязка кнопок
