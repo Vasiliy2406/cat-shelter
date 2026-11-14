@@ -18,6 +18,7 @@
             justify-content: center;
             height: 100vh;
             user-select: none;
+            overflow: hidden;
         }
 
         .cat-container {
@@ -38,17 +39,6 @@
             image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
-        /* Стили для слоев (ошейники и миски) */
-        .layer-img {
-            width: 160px; 
-            height: 160px;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
-            /* Важно: центрируем слой ровно по центру контейнера */
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }        
 
         .stats {
             font-size: 10px;
@@ -57,15 +47,18 @@
             line-height: 1.8;
         }
 
-        .coins {
-            color: #ffd700;
-            font-size: 14px;
+        .coins { color: #ffd700; font-size: 14px; }
+        .energy-text { color: #00bfff; font-size: 12px; }
+        
+        .energy-icon {
+            width: 16px;
+            height: 16px;
+            image-rendering: pixelated;
+            vertical-align: middle;
+            margin-bottom: 2px;
         }
 
-        .buttons {
-            display: flex;
-            gap: 15px;
-        }
+        .buttons { display: flex; gap: 15px; }
 
         button {
             font-family: 'Press Start 2P', cursive;
@@ -82,28 +75,11 @@
             text-align: center;
         }
 
-        button:active {
+        button:active:not(:disabled) {
             transform: translate(4px, 4px);
             box-shadow: 0 0 0 transparent !important;
         }
         
-        #feed-btn {
-            background-color: #4caf50; 
-        }
-
-        .energy-text { 
-            color: #00bfff; 
-            font-size: 12px; 
-        }
-        
-        .energy-icon {
-            width: 16px;
-            height: 16px;
-            image-rendering: pixelated;
-            vertical-align: middle;
-            margin-bottom: 2px;
-        }
-
         button:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -114,30 +90,29 @@
         .nav-btn { background-color: #333; color: white; font-size: 10px; padding: 10px; box-shadow: none; border: 2px solid #555; }
         .nav-btn.active { background-color: #555; border-color: #fff; }
 
-        /* Стили для экранов (скролл) */
+        /* Экраны и скролл */
         .screen { 
             display: none; 
             flex-direction: column; 
             align-items: center; 
             width: 100%; 
             height: 100vh; 
-            justify-content: flex-start; /* Прижимаем к верху */
+            justify-content: flex-start;
             padding-top: 20px;
             overflow: hidden;
+            box-sizing: border-box;
         }
         .screen.active { display: flex; }
 
-        /* Контейнер с прокруткой */
         .scroll-container {
             width: 95%;
             max-width: 500px;
-            flex: 1; /* Занимает всё свободное место */
-            overflow-y: auto; /* Включает вертикальный скролл */
-            padding-bottom: 90px; /* Отступ, чтобы кнопки навигации не перекрывали контент */
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 90px;
             margin-top: 10px;
         }
 
-        /* Заголовки разделов */
         .category-title {
             font-size: 12px;
             color: #aaa;
@@ -148,15 +123,13 @@
             padding-bottom: 5px;
         }
 
-        /* Сетка для предметов (2 колонки) */
         .items-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* Две равные колонки */
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             width: 100%;
         }
 
-        /* Карточки */
         .shop-item, .wardrobe-item { 
             background: #333; 
             padding: 10px; 
@@ -172,17 +145,9 @@
         }
 
         .shop-item p, .wardrobe-item p {
-            font-size: 8px; /* Маленький шрифт, чтобы влезало */
+            font-size: 8px;
             margin: 5px 0;
             word-wrap: break-word;
-        }
-
-        .shop-item button {
-            padding: 8px 5px;
-            font-size: 8px;
-            box-shadow: 2px 2px 0 #2e7d32;
-            width: 100%;
-            margin-top: auto;
         }
 
         .item-icon {
@@ -191,20 +156,21 @@
             image-rendering: pixelated; 
             image-rendering: crisp-edges;
             margin-bottom: 5px;
-            object-fit: contain; /* Вписывает картинку в квадрат не искажая */
+            object-fit: contain;
+        }
+
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px 5px;
+            font-size: 8px;
+            box-shadow: 2px 2px 0 #2e7d32;
         }
 
         .wardrobe-item.selected { border-color: #4caf50; }
         .wardrobe-item.locked { opacity: 0.3; pointer-events: none; }
         .check { position: absolute; top: -10px; right: -10px; font-size: 20px; display: none; }
         .wardrobe-item.selected .check { display: block; }
-        
-        .buy-btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 8px 5px;
-            font-size: 8px;
-        }
     </style>
 </head>
 <body>
@@ -218,10 +184,9 @@
         </div>
 
         <div class="cat-container" style="position: relative;">
-            <!-- Обертка для анимации -->
             <div id="cat-wrapper" style="width: 160px; height: 160px; position: relative; transition: transform 0.1s;">
                 <img src="cat.png" alt="Котик" id="cat-img" style="width: 100%; height: 100%; image-rendering: pixelated;">
-                <img src="red_collar.png" alt="Ошейник" id="collar-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; image-rendering: pixelated;">
+                <img src="" alt="Ошейник" id="collar-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; image-rendering: pixelated;">
                 <img src="" alt="Миска" id="bowl-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; image-rendering: pixelated;">
             </div>
         </div>
@@ -232,7 +197,6 @@
             <button id="help-btn" style="display: none; background-color: #2196f3; box-shadow: 4px 4px 0 #0d47a1;">Помощь (25🪙)</button>
         </div>
         
-        <!-- Кнопки навигации -->
         <div class="nav-bar">
             <button class="nav-btn active" onclick="switchTab('game')">🏠 Игра</button>
             <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
@@ -245,23 +209,23 @@
         <h2>Магазин</h2>
         <div class="stats">Монеты: <span class="coins shop-coins">0</span> 🪙</div>
         
-                <div class="scroll-container">
+        <div class="scroll-container">
             <h3 class="category-title">Ошейники</h3>
             <div class="items-grid">
                 <div class="shop-item">
                     <img src="red_collar.png" class="item-icon" alt="Ошейник">
                     <p>Красный</p>
-                    <button onclick="buyItem('collar_red', 50)" class="buy-btn">Купить (50🪙)</button>
+                    <button class="buy-btn" onclick="buyItem('collar_red', 50, this)">Купить (50🪙)</button>
                 </div>
                 <div class="shop-item">
                     <img src="blue_collar.png" class="item-icon" alt="Ошейник">
                     <p>Синий</p>
-                    <button onclick="buyItem('collar_blue', 60)" class="buy-btn">Купить (60🪙)</button>
+                    <button class="buy-btn" onclick="buyItem('collar_blue', 60, this)">Купить (60🪙)</button>
                 </div>
                 <div class="shop-item">
                     <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
                     <p>Желтый</p>
-                    <button onclick="buyItem('collar_yellow', 90)" class="buy-btn">Купить (90🪙)</button>
+                    <button class="buy-btn" onclick="buyItem('collar_yellow', 90, this)">Купить (90🪙)</button>
                 </div>
             </div>
 
@@ -270,12 +234,12 @@
                 <div class="shop-item">
                     <img src="green_bowl.png" class="item-icon" alt="Миска">
                     <p>Зеленая</p>
-                    <button onclick="buyItem('bowl_green', 30)" class="buy-btn">Купить (30🪙)</button>
+                    <button class="buy-btn" onclick="buyItem('bowl_green', 30, this)">Купить (30🪙)</button>
                 </div>
                 <div class="shop-item">
                     <img src="blue_bowl.png" class="item-icon" alt="Миска">
                     <p>Синяя</p>
-                    <button onclick="buyItem('bowl_blue', 40)" class="buy-btn">Купить (40🪙)</button>
+                    <button class="buy-btn" onclick="buyItem('bowl_blue', 40, this)">Купить (40🪙)</button>
                 </div>
             </div>
         </div>
@@ -292,25 +256,25 @@
         <h2>Гардероб</h2>
         <div class="stats">Выбери, что надеть</div>
         
-                <div class="scroll-container">
+        <div class="scroll-container">
             <h3 class="category-title">Ошейники</h3>
             <div class="items-grid">
-                <div class="wardrobe-item selected" onclick="equipItem('collar', 'none')">
+                <div class="wardrobe-item selected" onclick="equipItem('collar', 'none', this)">
                     <span style="font-size: 32px; display: block; height: 48px; line-height: 48px;">❌</span>
                     <p>Без ошейника</p>
                     <span class="check">✅</span>
                 </div>
-                <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red')">
+                <div class="wardrobe-item locked" id="item-collar_red" onclick="equipItem('collar', 'collar_red', this)">
                     <img src="red_collar.png" class="item-icon" alt="Красный ошейник">
                     <p>Красный</p>
                     <span class="check" style="display: none;">✅</span>
                 </div>
-                <div class="wardrobe-item locked" id="item-collar_blue" onclick="equipItem('collar', 'collar_blue')">
+                <div class="wardrobe-item locked" id="item-collar_blue" onclick="equipItem('collar', 'collar_blue', this)">
                     <img src="blue_collar.png" class="item-icon" alt="Синий ошейник">
                     <p>Синий</p>
                     <span class="check" style="display: none;">✅</span>
                 </div>
-                <div class="wardrobe-item locked" id="item-collar_yellow" onclick="equipItem('collar', 'collar_yellow')">
+                <div class="wardrobe-item locked" id="item-collar_yellow" onclick="equipItem('collar', 'collar_yellow', this)">
                     <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
                     <p>Желтый</p>
                     <span class="check" style="display: none;">✅</span>
@@ -319,17 +283,17 @@
 
             <h3 class="category-title">Миски</h3>
             <div class="items-grid">
-                <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red')">
+                <div class="wardrobe-item" id="item-bowl_red" onclick="equipBowl('bowl_red', this)">
                     <img src="red_bowl.png" class="item-icon" alt="Красная миска">
                     <p>Красная</p>
                     <span class="check">✅</span>
                 </div>
-                <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green')">
+                <div class="wardrobe-item locked" id="item-bowl_green" onclick="equipBowl('bowl_green', this)">
                     <img src="green_bowl.png" class="item-icon" alt="Зеленая миска">
                     <p>Зеленая</p>
                     <span class="check" style="display: none;">✅</span>
                 </div>
-                <div class="wardrobe-item locked" id="item-bowl_blue" onclick="equipBowl('bowl_blue')">
+                <div class="wardrobe-item locked" id="item-bowl_blue" onclick="equipBowl('bowl_blue', this)">
                     <img src="blue_bowl.png" class="item-icon" alt="Синяя миска">
                     <p>Синяя</p>
                     <span class="check" style="display: none;">✅</span>
@@ -344,90 +308,61 @@
         </div>
     </div>
 
-    <!-- Твой скрипт останется ниже -->
-
     <script>
-        let isEating = false; // Ест ли кот прямо сейчас
-        let currentCollar = localStorage.getItem('currentCollar') || 'none';
-        let currentBowl = localStorage.getItem('currentBowl') || 'bowl_red'; // По умолчанию красная
-                // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
+        // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
         let energy = Number(localStorage.getItem('energy'));
-    
+        let currentCollar = localStorage.getItem('currentCollar') || 'none';
+        let currentBowl = localStorage.getItem('currentBowl') || 'bowl_red'; 
 
-        // Если данные битые (NaN) или их нет, ставим стандартные
         if (isNaN(satiety)) satiety = 100;
         if (isNaN(coins)) coins = 0;
         if (isNaN(energy)) energy = 10;
 
         let maxEnergy = 10;
         let isOffended = false;  
+        let isEating = false; 
 
-                // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
+        // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
         let lastTime = Number(localStorage.getItem('lastTime'));
         
-        // Проверяем: если lastTime существует и это нормальное число (игра уже запускалась)
         if (!isNaN(lastTime) && lastTime > 0) {
             let timePassed = Date.now() - lastTime; 
             let secondsPassed = Math.floor(timePassed / 1000);
 
-            // 1. Восстановление энергии (1 единица за 15 секунд для теста)
             let energyToAdd = Math.floor(secondsPassed / 15);
-            if (energyToAdd > 0) {
-                energy = Math.min(maxEnergy, energy + energyToAdd); 
-            }
+            if (energyToAdd > 0) energy = Math.min(maxEnergy, energy + energyToAdd); 
 
-            // 2. Уменьшение сытости (1 единица за 300 секунд = 5 минут)
             let satietyToRemove = Math.floor(secondsPassed / 300);
-            if (satietyToRemove > 0) {
-                satiety = Math.max(5, satiety - satietyToRemove); 
-            }
+            if (satietyToRemove > 0) satiety = Math.max(5, satiety - satietyToRemove); 
         } else {
-            // ЭТО ПЕРВЫЙ ЗАПУСК! Ничего не вычитаем, ставим всё по умолчанию.
             satiety = 100;
             energy = 10;
         }
 
-        // Получаем элементы на странице
-        const satietyEl = document.getElementById('satiety');
-        const coinsEl = document.getElementById('coins');
-        const energyEl = document.getElementById('energy-text');
-        const catImg = document.getElementById('cat-img');
-        const feedBtn = document.getElementById('feed-btn');
-        const petBtn = document.getElementById('pet-btn');
-        const helpBtn = document.getElementById('help-btn');
-
-        // 1. СНАЧАЛА функция сохранения
-            function saveGame() {
+        // --- ФУНКЦИИ ---
+        function saveGame() {
             localStorage.setItem('satiety', satiety);
             localStorage.setItem('coins', coins);
             localStorage.setItem('energy', energy);
-            // ДОБАВЛЯЕМ СОХРАНЕНИЕ ВРЕМЕНИ
             localStorage.setItem('lastTime', Date.now());
             localStorage.setItem('currentCollar', currentCollar);
             localStorage.setItem('currentBowl', currentBowl);
         }
-        // Генератор правильной картинки кота
-                function updateCatImage() {
+
+        function updateCatImage() {
             const catImg = document.getElementById('cat-img');
             const collarLayer = document.getElementById('collar-layer');
 
-            // Если кот ест, не трогаем его картинку!
             if (isEating) {
-                // Но ошейник на время еды прячем
                 collarLayer.style.display = 'none';
                 return; 
             }
 
-            // 1. Ставим базового кота (грустного или веселого)
-            if (satiety < 30) {
-                catImg.src = 'cat_sad.png'; 
-            } else {
-                catImg.src = 'cat.png';
-            }
+            if (satiety < 30) catImg.src = 'cat_sad.png'; 
+            else catImg.src = 'cat.png';
 
-            // 2. Управляем слоем ошейника
             if (currentCollar === 'collar_red') {
                 collarLayer.src = 'cat_red_collar.png'; 
                 collarLayer.style.display = 'block';
@@ -438,17 +373,19 @@
                 collarLayer.src = 'cat_yellow_collar.png';
                 collarLayer.style.display = 'block';
             } else {
-                collarLayer.style.display = 'none'; // Прячем ошейник
+                collarLayer.style.display = 'none'; 
             }
         }
 
-        // 2. ПОТОМ функция обновления интерфейса
         function updateUI() {
-            satietyEl.innerText = Math.floor(satiety);
-            coinsEl.innerText = coins;
-            energyEl.innerText = energy;
+            document.getElementById('satiety').innerText = Math.floor(satiety);
+            document.getElementById('coins').innerText = coins;
+            document.getElementById('energy-text').innerText = energy;
             
-            // Цвет и тень кнопки еды
+            const feedBtn = document.getElementById('feed-btn');
+            const petBtn = document.getElementById('pet-btn');
+            const helpBtn = document.getElementById('help-btn');
+
             if (satiety < 30) {
                 feedBtn.style.backgroundColor = '#ff9800'; 
                 feedBtn.style.boxShadow = '4px 4px 0 #e65100'; 
@@ -457,10 +394,8 @@
                 feedBtn.style.boxShadow = '4px 4px 0 #2e7d32'; 
             }
 
-            // Картинка кота
-            updateCatImage(); // Просто вызываем генератор
+            updateCatImage(); 
 
-            // ЛОГИКА КНОПКИ ПОМОЩИ
             if (satiety <= 0 && coins < 5 && !isOffended) {
                 helpBtn.style.display = 'block'; 
                 feedBtn.style.display = 'none';
@@ -471,7 +406,6 @@
                 petBtn.style.display = 'block';
             }
 
-            // Блокировка кнопки "Погладить", если нет энергии
             if (energy <= 0) {
                 petBtn.disabled = true;
                 petBtn.innerText = "Нет сил";
@@ -480,136 +414,22 @@
                 petBtn.innerText = "Погладить (+2🪙)";
             }
 
-            saveGame(); // Сохраняем в самом конце
+            saveGame(); 
         }
 
-        // Кот теряет сытость
-        setInterval(() => {
-            if (satiety > 0) {
-                satiety -= 1;
-                updateUI();
-            }
-        }, 15000);
-
-        // Восстановление энергии (каждые 15 сек для теста)
-        setInterval(() => {
-            if (energy < maxEnergy) {
-                energy += 1;
-                updateUI();
-            }
-        }, 15000);
-
-        // Покормить
-        feedBtn.addEventListener('click', () => {
-            if (isOffended) {
-                alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
-                return; 
-            }
-
-            if (coins >= 5) {
-                coins -= 5;
-                satiety += 20; 
-                if (satiety > 100) satiety = 100; 
-                
-                // 1. Включаем флаг, чтобы updateCatImage не мешала анимации
-                isEating = true; 
-                
-                // 2. Прячем ошейник на время еды (он же на шее, а шея спрятана)
-                document.getElementById('collar-layer').style.display = 'none';
-                
-                // 3. Меняем кота на "ест"
-                catImg.src = 'cat_eat.png'; 
-                
-                // 4. Показываем нужную миску
-                const bowlLayer = document.getElementById('bowl-layer');
-                if (currentBowl === 'bowl_blue') bowlLayer.src = 'blue_bowl_eat.png';
-                else if (currentBowl === 'bowl_green') bowlLayer.src = 'green_bowl_eat.png';
-                else bowlLayer.src = 'red_bowl_eat.png';
-                
-                bowlLayer.style.display = 'block';
-                
-                // 5. Через секунду всё убираем
-                setTimeout(() => { 
-                    bowlLayer.style.display = 'none';
-                    isEating = false; // Выключаем флаг
-                    updateCatImage(); // Возвращает кота и ошейник в нужное состояние
-                }, 1000);
-                
-                updateUI();
-            } else {
-                alert("Не хватает монет! Гладь кота, чтобы заработать.");
-            }
-        });
-
-        // Погладить
-        petBtn.addEventListener('click', () => {
-            if (isOffended) return; 
-            if (satiety <= 0) {
-                alert("Кот слишком голоден! Сначала покорми его.");
-                return;
-            }
-            if (energy <= 0) return; 
-
-            // Тратим энергию, даем монеты и сытость
-            energy -= 1; 
-            coins += 2;
-            satiety -= 1; 
-            if (satiety < 0) satiety = 0;
-            
-            // Находим ОБЕРТКУ (а не отдельные слои)
-            const catWrapper = document.getElementById('cat-wrapper');
-
-            // Увеличиваем всю обертку целиком (кот + ошейник + миска двигаются как одно целое)
-            catWrapper.style.transform = "scale(1.1)";
-            
-            // Возвращаем обратно через 100 мс
-            setTimeout(() => { 
-                catWrapper.style.transform = "scale(1)"; 
-            }, 100);
-            
-            updateUI();
-        });
-
-        // Помощь из приюта
-        helpBtn.addEventListener('click', () => {
-            coins += 25; 
-            isOffended = true; 
-            
-            alert("Приют прислал 25 монет на еду! Но кот обиделся и не хочет играть 15 минут.");
-            
-            updateUI(); 
-
-            petBtn.disabled = true;
-            petBtn.innerText = "Обиделся...";
-
-            setTimeout(() => {
-                isOffended = false;
-                updateUI(); 
-            }, 15000); 
-        });
-
-        // Запуск при старте
-        updateUI();
-                // --- СИСТЕМА МАГАЗИНА И ГАРДЕРОБА ---
-        
-        // Переключение вкладок
         function switchTab(tabName) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-' + tabName).classList.add('active');
             
-            // Обновляем кнопки меню
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.querySelector(`.nav-btn[onclick="switchTab('${tabName}')"]`).classList.add('active');
 
-            // Обновляем монеты в магазине, если мы туда зашли
             if (tabName === 'shop') {
                 document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
             }
         }
 
-        // Покупка предмета
-                function buyItem(itemId, price) {
-            // Проверяем, не куплено ли уже
+        function buyItem(itemId, price, btnElement) {
             if (localStorage.getItem('item_' + itemId) === 'true') {
                 alert("Вы уже купили этот предмет!");
                 return;
@@ -620,30 +440,25 @@
                 updateUI(); 
                 alert("Покупка успешна! Предмет добавлен в гардероб.");
                 
-                // Разблокируем в гардеробе
                 const wardrobeItem = document.getElementById('item-' + itemId);
                 if (wardrobeItem) wardrobeItem.classList.remove('locked');
                 
-                // Меняем кнопку в магазине на "Куплено"
-                event.currentTarget.innerText = "Уже куплено";
-                event.currentTarget.disabled = true;
-                event.currentTarget.style.backgroundColor = '#555';
-                event.currentTarget.style.boxShadow = '4px 4px 0 #222';
-                event.currentTarget.style.color = '#aaa';
+                btnElement.innerText = "Уже куплено";
+                btnElement.disabled = true;
+                btnElement.style.backgroundColor = '#555';
+                btnElement.style.boxShadow = '4px 4px 0 #222';
+                btnElement.style.color = '#aaa';
 
-                // Сохраняем в память
                 localStorage.setItem('item_' + itemId, 'true');
             } else {
                 alert("Не хватает монет!");
             }
         }
 
-        // Надеть предмет
-                function equipItem(type, itemId) {
+        function equipItem(type, itemId, element) {
             if (type === 'collar') {
                 currentCollar = itemId;
                 
-                // Снимаем выделение ТОЛЬКО с ошейников
                 document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => {
                     if (el.getAttribute('onclick') && el.getAttribute('onclick').includes('equipItem')) {
                         el.classList.remove('selected');
@@ -652,21 +467,18 @@
                     }
                 });
 
-                // Добавляем выделение текущему ошейнику
-                event.currentTarget.classList.add('selected');
-                const currentCheck = event.currentTarget.querySelector('.check');
+                element.classList.add('selected');
+                const currentCheck = element.querySelector('.check');
                 if (currentCheck) currentCheck.style.display = 'block';
                 
                 updateCatImage(); 
                 saveGame(); 
             }
         }
-                // Надеть миску
-        function equipBowl(bowlId) {
+
+        function equipBowl(bowlId, element) {
             currentBowl = bowlId;
             
-            // Визуально выделяем выбранную миску
-            // (Находим все элементы гардероба с мисками и убираем выделение)
             document.querySelectorAll('#screen-wardrobe .wardrobe-item').forEach(el => {
                 if (el.getAttribute('onclick') && el.getAttribute('onclick').includes('equipBowl')) {
                     el.classList.remove('selected');
@@ -675,25 +487,103 @@
                 }
             });
 
-            // Добавляем выделение текущей миске
-            event.currentTarget.classList.add('selected');
-            const currentCheck = event.currentTarget.querySelector('.check');
+            element.classList.add('selected');
+            const currentCheck = element.querySelector('.check');
             if (currentCheck) currentCheck.style.display = 'block';
             
-            saveGame(); // Сохраняем выбор
+            saveGame(); 
         }
 
-                // Проверяем при запуске, какие предметы уже куплены и что надето
-                // Проверяем при запуске, какие предметы куплены и что надето
-        window.onload = () => {
-            // 1. Разблокируем купленные предметы
+        // --- ЗАПУСК ИГРЫ (Оборачиваем в DOMContentLoaded, чтобы кнопки точно были готовы) ---
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            // Привязка кнопок
+            document.getElementById('feed-btn').addEventListener('click', () => {
+                if (isOffended) {
+                    alert("Кот обиделся и отказывается есть! Подожди, пока он остынет.");
+                    return; 
+                }
+
+                if (coins >= 5) {
+                    coins -= 5;
+                    satiety += 20; 
+                    if (satiety > 100) satiety = 100; 
+                    
+                    isEating = true; 
+                    document.getElementById('collar-layer').style.display = 'none';
+                    document.getElementById('cat-img').src = 'cat_eat.png'; 
+                    
+                    const bowlLayer = document.getElementById('bowl-layer');
+                    if (currentBowl === 'bowl_blue') bowlLayer.src = 'blue_bowl_eat.png';
+                    else if (currentBowl === 'bowl_green') bowlLayer.src = 'green_bowl_eat.png';
+                    else bowlLayer.src = 'red_bowl_eat.png';
+                    
+                    bowlLayer.style.display = 'block';
+                    
+                    setTimeout(() => { 
+                        bowlLayer.style.display = 'none';
+                        isEating = false; 
+                        updateCatImage(); 
+                    }, 1000);
+                    
+                    updateUI();
+                } else {
+                    alert("Не хватает монет! Гладь кота, чтобы заработать.");
+                }
+            });
+
+            document.getElementById('pet-btn').addEventListener('click', () => {
+                if (isOffended) return; 
+                if (satiety <= 0) {
+                    alert("Кот слишком голоден! Сначала покорми его.");
+                    return;
+                }
+                if (energy <= 0) return; 
+
+                energy -= 1; 
+                coins += 2;
+                satiety -= 1; 
+                if (satiety < 0) satiety = 0;
+                
+                const catWrapper = document.getElementById('cat-wrapper');
+                catWrapper.style.transform = "scale(1.1)";
+                setTimeout(() => { catWrapper.style.transform = "scale(1)"; }, 100);
+                
+                updateUI();
+            });
+
+            document.getElementById('help-btn').addEventListener('click', () => {
+                coins += 25; 
+                isOffended = true; 
+                alert("Приют прислал 25 монет на еду! Но кот обиделся и не хочет играть 15 минут.");
+                updateUI(); 
+
+                const petBtn = document.getElementById('pet-btn');
+                petBtn.disabled = true;
+                petBtn.innerText = "Обиделся...";
+
+                setTimeout(() => {
+                    isOffended = false;
+                    updateUI(); 
+                }, 15000); 
+            });
+
+            // Таймеры
+            setInterval(() => {
+                if (satiety > 0) { satiety -= 1; updateUI(); }
+            }, 15000);
+
+            setInterval(() => {
+                if (energy < maxEnergy) { energy += 1; updateUI(); }
+            }, 15000);
+
+            // Проверка покупок при загрузке
             const items = ['collar_red', 'collar_blue', 'collar_yellow', 'bowl_green', 'bowl_blue'];
             items.forEach(item => {
                 if (localStorage.getItem('item_' + item) === 'true') {
                     const el = document.getElementById('item-' + item);
                     if (el) el.classList.remove('locked');
                     
-                    // Обновляем кнопки в магазине
                     const shopBtn = document.querySelector(`button[onclick*="${item}"]`);
                     if (shopBtn) {
                         shopBtn.innerText = "Уже куплено";
@@ -705,7 +595,7 @@
                 }
             });
 
-            // 2. Синхронизируем галочки
+            // Синхронизация галочек
             const allItems = document.querySelectorAll('#screen-wardrobe .wardrobe-item');
             allItems.forEach(el => {
                 el.classList.remove('selected');
@@ -713,36 +603,29 @@
                 if (check) check.style.display = 'none';
             });
 
-            // Выделяем ошейник
             let targetCollar = document.getElementById('item-' + currentCollar) || document.querySelector('#screen-wardrobe .wardrobe-item[onclick*="none"]');
             if (targetCollar) {
                 targetCollar.classList.add('selected');
                 targetCollar.querySelector('.check').style.display = 'block';
             }
 
-            // Выделяем миску
             let targetBowl = document.getElementById('item-' + currentBowl);
             if (targetBowl) {
                 targetBowl.classList.add('selected');
                 targetBowl.querySelector('.check').style.display = 'block';
             }
-        };
-        // --- ПРЕДЗАГРУЗКА ВСЕХ КАРТИНОК (чтобы не было вспышек) ---
-        function preloadImages() {
+
+            // Старт
+            updateUI();
+            
+            // Предзагрузка
             const images = [
                 'cat.png', 'cat_sad.png', 'cat_eat.png',
-                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 'cat_yellow_collar.png',
-                'cat_red_collar.png', 'cat_blue_collar.png'
+                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 
+                'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png'
             ];
-            
-            images.forEach(src => {
-                const img = new Image();
-                img.src = src;
-            });
-        }
-        
-        // Вызываем предзагрузку сразу при старте
-        preloadImages();
+            images.forEach(src => { const img = new Image(); img.src = src; });
+        });
     </script>
 </body>
 </html>
