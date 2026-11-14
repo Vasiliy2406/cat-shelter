@@ -261,7 +261,7 @@
                 <div class="shop-item">
                     <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
                     <p>Желтый</p>
-                    <button onclick="buyItem('collar_yellow', 90)" class="buy-btn">Купить (70🪙)</button>
+                    <button onclick="buyItem('collar_yellow', 90)" class="buy-btn">Купить (90🪙)</button>
                 </div>
             </div>
 
@@ -687,7 +687,7 @@
                 // Проверяем при запуске, какие предметы куплены и что надето
         window.onload = () => {
             // 1. Разблокируем купленные предметы
-            const items = ['collar_red', 'collar_blue', 'collar_yellow' 'bowl_green', 'bowl_blue'];
+            const items = ['collar_red', 'collar_blue', 'collar_yellow', 'bowl_green', 'bowl_blue'];
             items.forEach(item => {
                 if (localStorage.getItem('item_' + item) === 'true') {
                     const el = document.getElementById('item-' + item);
@@ -731,7 +731,7 @@
         function preloadImages() {
             const images = [
                 'cat.png', 'cat_sad.png', 'cat_eat.png',
-                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 'cat_yellow_collar.png'
+                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 'cat_yellow_collar.png',
                 'cat_red_collar.png', 'cat_blue_collar.png'
             ];
             
