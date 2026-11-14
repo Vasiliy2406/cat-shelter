@@ -222,7 +222,7 @@
             <div id="cat-wrapper" style="width: 160px; height: 160px; position: relative; transition: transform 0.1s;">
                 <img src="cat.png" alt="Котик" id="cat-img" style="width: 100%; height: 100%; image-rendering: pixelated;">
                 <img src="red_collar.png" alt="Ошейник" id="collar-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; image-rendering: pixelated;">
-                <img src="red_bowl_eat.png" alt="Миска" id="bowl-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; image-rendering: pixelated;">
+                <img src="" alt="Миска" id="bowl-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; image-rendering: pixelated;">
             </div>
         </div>
 
@@ -714,6 +714,22 @@
                 targetBowl.querySelector('.check').style.display = 'block';
             }
         };
+        // --- ПРЕДЗАГРУЗКА ВСЕХ КАРТИНОК (чтобы не было вспышек) ---
+        function preloadImages() {
+            const images = [
+                'cat.png', 'cat_sad.png', 'cat_eat.png',
+                'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png',
+                'cat_red_collar.png', 'cat_blue_collar.png'
+            ];
+            
+            images.forEach(src => {
+                const img = new Image();
+                img.src = src;
+            });
+        }
+        
+        // Вызываем предзагрузку сразу при старте
+        preloadImages();
     </script>
 </body>
 </html>
