@@ -198,6 +198,10 @@
                 <img src="cat.png" class="item-icon" style="width: 64px; height: 64px;">
                 <p>Трехцветный</p>
             </div>
+            <div class="wardrobe-item" onclick="selectBreed('gray')">
+                <img src="cat_breed_gray.png" class="item-icon" style="width: 64px; height: 64px;">
+                <p>Серый</p>
+            </div>
         </div>
     </div>
     
@@ -428,19 +432,23 @@
             const catImg = document.getElementById('cat-img');
             const collarLayer = document.getElementById('collar-layer');
 
-            if (isEating) {
-                collarLayer.style.display = 'none';
-                return; 
+            if (isEating) { collarLayer.style.display = 'none'; return; }
+
+            // --- ЗДЕСЬ ДОБАВЛЯЕМ НОВУЮ ПОРОДУ ---
+            if (currentBreed === 'gray') {
+                if (satiety < 30) catImg.src = 'cat_breed_gray_sad.png'; 
+                else catImg.src = 'cat_breed_gray.png';
+            } 
+            else if (currentBreed === 'calico') {
+                if (satiety < 30) catImg.src = 'cat_sad.png'; 
+                else catImg.src = 'cat.png';
+            } 
+            else {
+                // По умолчанию рыжий
+                if (satiety < 30) catImg.src = 'cat_breed_orange_sad.png'; 
+                else catImg.src = 'cat_breed_orange.png';
             }
 
-            // Пока у нас только рыжий, поэтому ставим его по умолчанию
-            let breedPrefix = 'cat_breed_orange'; 
-
-            if (satiety < 30) {
-                catImg.src = breedPrefix + '_sad.png'; 
-            } else {
-                catImg.src = breedPrefix + '.png';
-            }
 
             if (currentCollar === 'collar_red') {
                 collarLayer.src = 'cat_red_collar.png'; 
@@ -581,8 +589,13 @@
                     isEating = true; 
                     document.getElementById('collar-layer').style.display = 'none';
                     
-                    // Рыжий кот ест свою еду
-                    document.getElementById('cat-img').src = 'cat_breed_orange_eat.png'; 
+                    if (currentBreed === 'gray') {
+                        document.getElementById('cat-img').src = 'cat_breed_gray_eat.png';
+                    } else if (currentBreed === 'calico') {
+                        document.getElementById('cat-img').src = 'cat_eat.png';
+                    } else {
+                        document.getElementById('cat-img').src = 'cat_breed_orange_eat.png';
+                    }
                     
                     const bowlLayer = document.getElementById('bowl-layer');
                     if (currentBowl === 'bowl_blue') bowlLayer.src = 'blue_bowl_eat.png';
@@ -691,8 +704,15 @@
             
             // Предзагрузка
             const images = [
+                // Рыжий
                 'cat_breed_orange.png', 'cat_breed_orange_sad.png', 'cat_breed_orange_eat.png',
+                // Трехцветный
+                'cat.png', 'cat_sad.png', 'cat_eat.png',
+                // Серый
+                'cat_breed_gray.png', 'cat_breed_gray_sad.png', 'cat_breed_gray_eat.png',
+                // Миски
                 'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 
+                // Ошейники
                 'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png', 'cat_violet_collar.png'
             ];
             images.forEach(src => { const img = new Image(); img.src = src; });
