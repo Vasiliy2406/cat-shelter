@@ -209,9 +209,9 @@
         </div>
         
         <div class="nav-bar">
-            <button id="nav-game" class="nav-btn active" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button id="nav-shop" class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button id="nav-wardrobe" class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
         </div>
     </div>
 
@@ -256,9 +256,9 @@
         </div>
 
         <div class="nav-bar">
-            <button id="nav-game" class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button id="nav-shop" class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button id="nav-wardrobe" class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
         </div>
     </div>
 
@@ -313,9 +313,9 @@
         </div>
 
         <div class="nav-bar">
-            <button id="nav-game" class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button id="nav-shop" class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button id="nav-wardrobe" class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button class="nav-btn" onclick="switchTab('game')">🏠 Игра</button>
+            <button class="nav-btn" onclick="switchTab('shop')">🛒 Магазин</button>
+            <button class="nav-btn" onclick="switchTab('wardrobe')">👕 Гардероб</button>
         </div>
     </div>
 
@@ -362,25 +362,22 @@
             localStorage.setItem('currentBowl', currentBowl);
         }
 
-        function switchTab(tabName, btnElement) {
+        function switchTab(tabName) {
             // 1. Переключаем экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-' + tabName).classList.add('active');
             
-            // 2. Снимаем подсветку со ВСЕХ кнопок навигации
+            // 2. Снимаем подсветку со ВСЕХ кнопок
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-            // 3. Делаем микро-задержку, чтобы телефон не сбросил фокус
-            setTimeout(() => {
-                // Если кнопка передана (btnElement), подсвечиваем именно её
-                if (btnElement) {
-                    btnElement.classList.add('active');
-                } else {
-                    // Если кнопка не передана, ищем её по ID
-                    const activeBtn = document.getElementById('nav-' + tabName);
-                    if (activeBtn) activeBtn.classList.add('active');
-                }
-            }, 50);
+            // 3. Включаем подсветку для нужной кнопки
+            // Находим все кнопки в текущем активном экране и подсвечиваем нужную
+            const activeScreen = document.getElementById('screen-' + tabName);
+            const buttons = activeScreen.querySelectorAll('.nav-btn');
+            
+            if (tabName === 'game') buttons[0].classList.add('active');
+            if (tabName === 'shop') buttons[1].classList.add('active');
+            if (tabName === 'wardrobe') buttons[2].classList.add('active');
 
             // Обновляем монеты в магазине
             if (tabName === 'shop') {
