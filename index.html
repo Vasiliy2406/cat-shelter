@@ -73,7 +73,7 @@
             flex: 1;
             white-space: nowrap;
             text-align: center;
-            touch-action: manipulation; /* ЛЕЧИМ ДВОЙНОЙ КЛИК */
+            touch-action: manipulation;
         }
 
         button:active:not(:disabled) {
@@ -95,7 +95,7 @@
             padding: 10px; 
             box-shadow: none; 
             border: 2px solid #555; 
-            touch-action: manipulation; /* ЛЕЧИМ ДВОЙНОЙ КЛИК */
+            touch-action: manipulation;
         }
         .nav-btn.active { background-color: #555; border-color: #fff; }
 
@@ -174,7 +174,7 @@
             padding: 8px 5px;
             font-size: 8px;
             box-shadow: 2px 2px 0 #2e7d32;
-            touch-action: manipulation; /* ЛЕЧИМ ДВОЙНОЙ КЛИК */
+            touch-action: manipulation;
         }
 
         .wardrobe-item.selected { border-color: #4caf50; }
@@ -184,7 +184,20 @@
     </style>
 </head>
 <body>
-
+    <!-- ЭКРАН 0: ВЫБОР ПОРОДЫ -->
+    <div id="screen-breed" class="screen">
+        <h2>Выбери питомца</h2>
+        <div class="stats">Кто будет жить с тобой?</div>
+        
+        <div class="items-grid" style="max-width: 300px; margin-top: 20px;">
+            <div class="wardrobe-item" onclick="selectBreed('orange')">
+                <img src="cat_breed_orange.png" class="item-icon" style="width: 64px; height: 64px;">
+                <p>Рыжий</p>
+            </div>
+            <!-- Сюда потом добавим серого и черно-белого -->
+        </div>
+    </div>
+    
     <!-- ЭКРАН 1: ИГРА -->
     <div id="screen-game" class="screen active">
         <div class="stats">
@@ -195,8 +208,7 @@
 
         <div class="cat-container" style="position: relative;">
             <div id="cat-wrapper" style="width: 160px; height: 160px; position: relative; transition: transform 0.1s;">
-                <img src="cat.png" alt="Котик" id="cat-img" style="width: 100%; height: 100%; image-rendering: pixelated;">
-                <!-- Убрали принудительную загрузку картинок, чтобы не было вспышек -->
+                <img src="cat_breed_orange.png" alt="Котик" id="cat-img" style="width: 100%; height: 100%; image-rendering: pixelated;">
                 <img src="" alt="Ошейник" id="collar-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 5; image-rendering: pixelated;">
                 <img src="" alt="Миска" id="bowl-layer" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; image-rendering: pixelated;">
             </div>
@@ -336,6 +348,7 @@
         let energy = Number(localStorage.getItem('energy'));
         let currentCollar = localStorage.getItem('currentCollar') || 'none';
         let currentBowl = localStorage.getItem('currentBowl') || 'bowl_red'; 
+        let currentBreed = localStorage.getItem('currentBreed') || null;
 
         if (isNaN(satiety)) satiety = 100;
         if (isNaN(coins)) coins = 0;
@@ -370,18 +383,32 @@
             localStorage.setItem('lastTime', Date.now());
             localStorage.setItem('currentCollar', currentCollar);
             localStorage.setItem('currentBowl', currentBowl);
+            if (currentBreed) localStorage.setItem('currentBreed', currentBreed);
+        }
+
+        // --- СИСТЕМА ПОРОД ---
+        function selectBreed(breedName) {
+            currentBreed = breedName;
+            localStorage.setItem('currentBreed', currentBreed);
+            
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen-game').classList.add('active');
+            
+            updateCatImage();
+        }
+
+        // Проверяем при запуске: если порода не выбрана, показываем экран выбора
+        if (!currentBreed) {
+            document.getElementById('screen-game').classList.remove('active');
+            document.getElementById('screen-breed').classList.add('active');
         }
 
         function switchTab(tabName) {
-            // 1. Переключаем экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-' + tabName).classList.add('active');
             
-            // 2. Снимаем подсветку со ВСЕХ кнопок
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-            // 3. Включаем подсветку для нужной кнопки
-            // Находим все кнопки в текущем активном экране и подсвечиваем нужную
             const activeScreen = document.getElementById('screen-' + tabName);
             const buttons = activeScreen.querySelectorAll('.nav-btn');
             
@@ -389,7 +416,6 @@
             if (tabName === 'shop') buttons[1].classList.add('active');
             if (tabName === 'wardrobe') buttons[2].classList.add('active');
 
-            // Обновляем монеты в магазине
             if (tabName === 'shop') {
                 document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
             }
@@ -404,8 +430,14 @@
                 return; 
             }
 
-            if (satiety < 30) catImg.src = 'cat_sad.png'; 
-            else catImg.src = 'cat.png';
+            // Пока у нас только рыжий, поэтому ставим его по умолчанию
+            let breedPrefix = 'cat_breed_orange'; 
+
+            if (satiety < 30) {
+                catImg.src = breedPrefix + '_sad.png'; 
+            } else {
+                catImg.src = breedPrefix + '.png';
+            }
 
             if (currentCollar === 'collar_red') {
                 collarLayer.src = 'cat_red_collar.png'; 
@@ -545,10 +577,11 @@
                     
                     isEating = true; 
                     document.getElementById('collar-layer').style.display = 'none';
-                    document.getElementById('cat-img').src = 'cat_eat.png'; 
+                    
+                    // Рыжий кот ест свою еду
+                    document.getElementById('cat-img').src = 'cat_breed_orange_eat.png'; 
                     
                     const bowlLayer = document.getElementById('bowl-layer');
-                    // Устанавливаем картинку миски ДО того, как показываем её
                     if (currentBowl === 'bowl_blue') bowlLayer.src = 'blue_bowl_eat.png';
                     else if (currentBowl === 'bowl_green') bowlLayer.src = 'green_bowl_eat.png';
                     else bowlLayer.src = 'red_bowl_eat.png';
@@ -655,7 +688,7 @@
             
             // Предзагрузка
             const images = [
-                'cat.png', 'cat_sad.png', 'cat_eat.png',
+                'cat_breed_orange.png', 'cat_breed_orange_sad.png', 'cat_breed_orange_eat.png',
                 'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 
                 'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png', 'cat_violet_collar.png'
             ];
