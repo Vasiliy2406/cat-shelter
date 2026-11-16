@@ -363,12 +363,21 @@
         }
 
         function switchTab(tabName, btnElement) {
+            // 1. Переключаем экраны
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('screen-' + tabName).classList.add('active');
             
+            // 2. Снимаем подсветку со ВСЕХ кнопок навигации
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            if (btnElement) btnElement.classList.add('active');
 
+            // 3. Включаем подсветку для той кнопки, которая ведет на активный экран
+            // Мы просто ищем кнопку, у которой в onclick написано нужное имя экрана
+            const activeBtn = document.querySelector(`.nav-btn[onclick*="'${tabName}'"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            // Обновляем монеты в магазине
             if (tabName === 'shop') {
                 document.querySelectorAll('.shop-coins').forEach(el => el.innerText = coins);
             }
