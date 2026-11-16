@@ -209,9 +209,9 @@
         </div>
         
         <div class="nav-bar">
-            <button class="nav-btn active" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button id="nav-game" class="nav-btn active" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button id="nav-shop" class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button id="nav-wardrobe" class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -256,9 +256,9 @@
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button class="nav-btn active" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button id="nav-game" class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button id="nav-shop" class="nav-btn active" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button id="nav-wardrobe" class="nav-btn" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -313,9 +313,9 @@
         </div>
 
         <div class="nav-bar">
-            <button class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
-            <button class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
-            <button class="nav-btn active" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
+            <button id="nav-game" class="nav-btn" onclick="switchTab('game', this)">🏠 Игра</button>
+            <button id="nav-shop" class="nav-btn" onclick="switchTab('shop', this)">🛒 Магазин</button>
+            <button id="nav-wardrobe" class="nav-btn active" onclick="switchTab('wardrobe', this)">👕 Гардероб</button>
         </div>
     </div>
 
@@ -370,9 +370,8 @@
             // 2. Снимаем подсветку со ВСЕХ кнопок навигации
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-            // 3. Включаем подсветку для той кнопки, которая ведет на активный экран
-            // Мы просто ищем кнопку, у которой в onclick написано нужное имя экрана
-            const activeBtn = document.querySelector(`.nav-btn[onclick*="'${tabName}'"]`);
+            // 3. Включаем подсветку для нужной кнопки по её ID
+            const activeBtn = document.getElementById('nav-' + tabName);
             if (activeBtn) {
                 activeBtn.classList.add('active');
             }
