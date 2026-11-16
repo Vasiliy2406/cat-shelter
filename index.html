@@ -238,6 +238,11 @@
                     <p>Желтый</p>
                     <button class="buy-btn" onclick="buyItem('collar_yellow', 90, this)">Купить (90🪙)</button>
                 </div>
+                <div class="shop-item">
+                    <img src="violet_collar.png" class="item-icon" alt="Фиолетовый ошейник">
+                    <p>Фиолетовый</p>
+                    <button class="buy-btn" onclick="buyItem('collar_violet', 90, this)">Купить (90🪙)</button>
+                </div>
             </div>
 
             <h3 class="category-title">Миски</h3>
@@ -288,6 +293,11 @@
                 <div class="wardrobe-item locked" id="item-collar_yellow" onclick="equipItem('collar', 'collar_yellow', this)">
                     <img src="yellow_collar.png" class="item-icon" alt="Желтый ошейник">
                     <p>Желтый</p>
+                    <span class="check" style="display: none;">✅</span>
+                </div>
+                <div class="wardrobe-item locked" id="item-collar_violet" onclick="equipItem('collar', 'collar_violet', this)">
+                    <img src="violet_collar.png" class="item-icon" alt="Фиолетовый ошейник">
+                    <p>Фиолетовый</p>
                     <span class="check" style="display: none;">✅</span>
                 </div>
             </div>
@@ -405,6 +415,9 @@
                 collarLayer.style.display = 'block';
             } else if (currentCollar === 'collar_yellow') {
                 collarLayer.src = 'cat_yellow_collar.png';
+                collarLayer.style.display = 'block';
+            } else if (currentCollar === 'collar_violet) {
+                collarLayer.src = 'cat_violet_collar.png';
                 collarLayer.style.display = 'block';
             } else {
                 collarLayer.style.display = 'none'; 
@@ -600,7 +613,7 @@
             }, 15000);
 
             // Проверка покупок при загрузке
-            const items = ['collar_red', 'collar_blue', 'collar_yellow', 'bowl_green', 'bowl_blue'];
+            const items = ['collar_red', 'collar_blue', 'collar_yellow', 'collar_violet', 'bowl_green', 'bowl_blue'];
             items.forEach(item => {
                 if (localStorage.getItem('item_' + item) === 'true') {
                     const el = document.getElementById('item-' + item);
@@ -644,7 +657,7 @@
             const images = [
                 'cat.png', 'cat_sad.png', 'cat_eat.png',
                 'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 
-                'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png'
+                'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png', 'cat_violet_collar.png'
             ];
             images.forEach(src => { const img = new Image(); img.src = src; });
         });
