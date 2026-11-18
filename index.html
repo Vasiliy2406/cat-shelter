@@ -400,11 +400,8 @@
             const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
             const finalUserId = tgUser ? String(tgUser) : "test_user_123";
 
-            // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ RENDER!
             const SERVER_URL = 'https://cat-server-jsgz.onrender.com/update'; 
             
-            if (SERVER_URL.includes('xxxx')) return; // Защита от отправки на заглушку
-
             fetch(SERVER_URL, {
                 method: 'POST',
                 headers: { 
@@ -416,7 +413,12 @@
                     satiety: Math.floor(satiety),
                     coins: coins
                 })
-            }).catch(err => console.log("Сервер недоступен", err));
+            })
+            .then(response => {
+                if(response.ok) console.log("✅ Данные отправлены на сервер");
+                else console.log("⚠️ Сервер ответил ошибкой: " + response.status);
+            })
+            .catch(err => console.log("❌ Сервер недоступен", err));
         }
 
         function selectBreed(breedName) {
