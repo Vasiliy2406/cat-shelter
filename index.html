@@ -350,7 +350,6 @@
 
     <script>
         // Получаем ID пользователя Telegram
-        const telegramUserId = window.Telegram.WebApp.initDataUnsafe?.user?.id || "test_user_123";
         // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
@@ -385,29 +384,32 @@
         }
 
         // --- ФУНКЦИИ ---
-function saveGame() {
-    // Твои старые сохранения
-    localStorage.setItem('satiety', satiety);
-    localStorage.setItem('coins', coins);
-    localStorage.setItem('energy', energy);
-    localStorage.setItem('lastTime', Date.now());
-    localStorage.setItem('currentCollar', currentCollar);
-    localStorage.setItem('currentBowl', currentBowl);
-    if (currentBreed) localStorage.setItem('currentBreed', currentBreed);
+        function saveGame() {
+            // Твои старые сохранения
+            localStorage.setItem('satiety', satiety);
+            localStorage.setItem('coins', coins);
+            localStorage.setItem('energy', energy);
+            localStorage.setItem('lastTime', Date.now());
+            localStorage.setItem('currentCollar', currentCollar);
+            localStorage.setItem('currentBowl', currentBowl);
+            if (currentBreed) localStorage.setItem('currentBreed', currentBreed);
 
-    // --- ОТПРАВКА НА СЕРВЕР ---
-    // Замени ссылку на свою из Render!
-    const SERVER_URL = 'https://твой-сервер.onrender.com/update'; 
-    
-    fetch(SERVER_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            user_id: telegramUserId,
-            satiety: Math.floor(satiety)
-        })
-    }).catch(err => console.log("Сервер недоступен (это нормально, если интернет плохой)", err));
-}
+            // --- ОТПРАВКА НА СЕРВЕР ---
+            // Получаем ID прямо здесь, когда Telegram точно загружен
+            const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+            const finalUserId = tgUser ? String(tgUser) : "test_user_123";
+
+            const SERVER_URL = 'https://твой-сервер.onrender.com/update'; // Замени на свою ссылку!
+            
+            fetch(SERVER_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: finalUserId,
+                    satiety: Math.floor(satiety)
+                })
+            }).catch(err => console.log("Сервер недоступен", err));
+        }
 
         // --- СИСТЕМА ПОРОД ---
         function selectBreed(breedName) {
