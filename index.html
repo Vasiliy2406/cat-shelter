@@ -86,7 +86,6 @@
             cursor: not-allowed;
         }
 
-        /* Навигация */
         .nav-bar { position: absolute; bottom: 20px; display: flex; gap: 10px; width: 90%; }
         .nav-btn { 
             background-color: #333; 
@@ -99,7 +98,6 @@
         }
         .nav-btn.active { background-color: #555; border-color: #fff; }
 
-        /* Экраны и скролл */
         .screen { 
             display: none; 
             flex-direction: column; 
@@ -349,8 +347,7 @@
     </div>
 
     <script>
-        // Получаем ID пользователя Telegram
-        // --- БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ ---
+        // 1. БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
         let energy = Number(localStorage.getItem('energy'));
@@ -366,7 +363,7 @@
         let isOffended = false;  
         let isEating = false; 
 
-        // --- МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ ---
+        // 2. МАГИЯ ОФЛАЙН-ВОССТАНОВЛЕНИЯ
         let lastTime = Number(localStorage.getItem('lastTime'));
         
         if (!isNaN(lastTime) && lastTime > 0) {
@@ -383,9 +380,9 @@
             energy = 10;
         }
 
-        // --- ФУНКЦИИ ---
+        // 3. ФУНКЦИИ
         function saveGame() {
-            // Твои старые сохранения
+            // Сохранение локально
             localStorage.setItem('satiety', satiety);
             localStorage.setItem('coins', coins);
             localStorage.setItem('energy', energy);
@@ -395,12 +392,14 @@
             if (currentBreed) localStorage.setItem('currentBreed', currentBreed);
 
             // --- ОТПРАВКА НА СЕРВЕР ---
-            // Получаем ID прямо здесь, когда Telegram точно загружен
             const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
             const finalUserId = tgUser ? String(tgUser) : "test_user_123";
 
-            const SERVER_URL = 'https://твой-сервер.onrender.com/update'; // Замени на свою ссылку!
+            // ВСТАВЬ СЮДА СВОЮ ССЫЛКУ ИЗ RENDER!
+            const SERVER_URL = 'https://cat-server-jsgz.onrender.com'; 
             
+            if (SERVER_URL.includes('xxxx')) return; // Защита от отправки на заглушку
+
             fetch(SERVER_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -411,7 +410,6 @@
             }).catch(err => console.log("Сервер недоступен", err));
         }
 
-        // --- СИСТЕМА ПОРОД ---
         function selectBreed(breedName) {
             currentBreed = breedName;
             localStorage.setItem('currentBreed', currentBreed);
@@ -452,7 +450,6 @@
 
             if (isEating) { collarLayer.style.display = 'none'; return; }
 
-            // --- ЗДЕСЬ ДОБАВЛЯЕМ НОВУЮ ПОРОДУ ---
             if (currentBreed === 'gray') {
                 if (satiety < 30) catImg.src = 'cat_breed_gray_sad.png'; 
                 else catImg.src = 'cat_breed_gray.png';
@@ -462,11 +459,9 @@
                 else catImg.src = 'cat.png';
             } 
             else {
-                // По умолчанию рыжий
                 if (satiety < 30) catImg.src = 'cat_breed_orange_sad.png'; 
                 else catImg.src = 'cat_breed_orange.png';
             }
-
 
             if (currentCollar === 'collar_red') {
                 collarLayer.src = 'cat_red_collar.png'; 
@@ -590,7 +585,7 @@
             saveGame(); 
         }
 
-        // --- ЗАПУСК ИГРЫ ---
+        // 4. ЗАПУСК ИГРЫ
         document.addEventListener('DOMContentLoaded', () => {
             
             document.getElementById('feed-btn').addEventListener('click', () => {
@@ -722,15 +717,10 @@
             
             // Предзагрузка
             const images = [
-                // Рыжий
                 'cat_breed_orange.png', 'cat_breed_orange_sad.png', 'cat_breed_orange_eat.png',
-                // Трехцветный
                 'cat.png', 'cat_sad.png', 'cat_eat.png',
-                // Серый
                 'cat_breed_gray.png', 'cat_breed_gray_sad.png', 'cat_breed_gray_eat.png',
-                // Миски
                 'red_bowl_eat.png', 'green_bowl_eat.png', 'blue_bowl_eat.png', 
-                // Ошейники
                 'cat_red_collar.png', 'cat_blue_collar.png', 'cat_yellow_collar.png', 'cat_violet_collar.png'
             ];
             images.forEach(src => { const img = new Image(); img.src = src; });
