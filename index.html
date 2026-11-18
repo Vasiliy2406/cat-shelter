@@ -348,6 +348,11 @@
 
     <script>
         // 1. БЕЗОПАСНАЯ ЗАГРУЗКА ДАННЫХ
+        // --- СБРОС ЧЕРЕЗ ССЫЛКУ ---
+        if (window.location.href.includes('?reset=true')) {
+            localStorage.clear();
+            window.location.href = window.location.href.replace('?reset=true', ''); // Убираем параметр из ссылки
+        }
         let satiety = Number(localStorage.getItem('satiety'));
         let coins = Number(localStorage.getItem('coins'));
         let energy = Number(localStorage.getItem('energy'));
