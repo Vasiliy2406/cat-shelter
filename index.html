@@ -409,11 +409,12 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'X-Secret-Key': 'MySuperSecretKey_123' // <--- Тот же пароль
+                    'X-Secret-Key': 'MySuperSecretKey_123'
                 },
                 body: JSON.stringify({
                     user_id: finalUserId,
-                    satiety: Math.floor(satiety)
+                    satiety: Math.floor(satiety),
+                    coins: coins
                 })
             }).catch(err => console.log("Сервер недоступен", err));
         }
@@ -595,6 +596,30 @@
 
         // 4. ЗАПУСК ИГРЫ
         document.addEventListener('DOMContentLoaded', () => {
+            // 1. Синхронизация с сервером при запуске
+            const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+            if (tgUser) {
+                fetch(`https://cat-server-jsgz.onrender.com/load/${tgUser}`, {
+                    headers: { 'X-Secret-Key': 'MySuperSecretKey_123' }
+                })
+                .then(res => {
+                    if (res.status === 200) return res.json();
+                    return null;
+                })
+                .then(data => {
+                    if (data) {
+                        // Если данные на сервере есть - берем их!
+                        satiety = data.satiety;
+                        coins = data.coins;
+                        // Сохраняем их в локальный кэш, чтобы при обрыве связи игра не лагала
+                        localStorage.setItem('satiety', satiety);
+                        localStorage.setItem('coins', coins);
+                        updateUI(); // Перерисовываем экран
+                        console.log("☁️ Данные загружены с сервера!");
+                    }
+                })
+                .catch(err => console.log("Сервер недоступен, играем локально", err));
+            }
             
             document.getElementById('feed-btn').addEventListener('click', () => {
                 if (isOffended) {
