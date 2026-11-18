@@ -407,7 +407,10 @@
 
             fetch(SERVER_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-Secret-Key': 'MySuperSecretKey_123' // <--- Тот же пароль
+                },
                 body: JSON.stringify({
                     user_id: finalUserId,
                     satiety: Math.floor(satiety)
