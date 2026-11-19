@@ -411,7 +411,8 @@
                 body: JSON.stringify({
                     user_id: finalUserId,
                     satiety: Math.floor(satiety),
-                    coins: coins
+                    coins: coins,
+                    breed: currentBreed
                 })
             })
             .then(response => {
@@ -619,6 +620,13 @@
                     // Если данные на сервере есть - берем их!
                     satiety = data.satiety;
                     coins = data.coins;
+                    if (data.breed) {
+                        currentBreed = data.breed;
+                        localStorage.setItem('currentBreed', currentBreed);
+                        // Прячем экран выбора породы, показываем игру
+                        document.getElementById('screen-breed').classList.remove('active');
+                        document.getElementById('screen-game').classList.add('active');
+                    }
                     // Сохраняем их в локальный кэш на всякий случай
                     localStorage.setItem('satiety', satiety);
                     localStorage.setItem('coins', coins);
