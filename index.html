@@ -598,32 +598,35 @@
 
         // 4. ЗАПУСК ИГРЫ
         document.addEventListener('DOMContentLoaded', () => {
+            
             // 1. Синхронизация с сервером при запуске
             // --- ЗАГРУЗКА С СЕРВЕРА ПРИ СТАРТЕ ---
             const tgUser = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-            if (tgUser) {
-                fetch(`https://cat-server-jsgz.onrender.com/load/${tgUser}`, {
-                    method: 'GET',
-                    headers: { 'X-Secret-Key': 'MySuperSecretKey_123' }
-                })
-                .then(res => {
-                    if (res.status === 200) return res.json();
-                    return null;
-                })
-                .then(data => {
-                    if (data) {
-                        // Если данные на сервере есть - берем их!
-                        satiety = data.satiety;
-                        coins = data.coins;
-                        // Сохраняем их в локальный кэш на всякий случай
-                        localStorage.setItem('satiety', satiety);
-                        localStorage.setItem('coins', coins);
-                        updateUI(); // Перерисовываем экран новыми данными
-                        console.log("☁️ Данные загружены с сервера!");
-                    }
-                })
-                .catch(err => console.log("Сервер недоступен, играем локально", err));
-            }
+            
+            // Если мы на ПК (вне Телеграма), используем тестовый ID
+            const loadUserId = tgUser ? String(tgUser) : "test_user_123";
+
+            fetch(`https://cat-server-jsgz.onrender.com/load/${loadUserId}`, {
+                method: 'GET',
+                headers: { 'X-Secret-Key': 'MySuperSecretKey_123' }
+            })
+            .then(res => {
+                if (res.status === 200) return res.json();
+                return null;
+            })
+            .then(data => {
+                if (data) {
+                    // Если данные на сервере есть - берем их!
+                    satiety = data.satiety;
+                    coins = data.coins;
+                    // Сохраняем их в локальный кэш на всякий случай
+                    localStorage.setItem('satiety', satiety);
+                    localStorage.setItem('coins', coins);
+                    updateUI(); // Перерисовываем экран новыми данными
+                    console.log("☁️ Данные загружены с сервера!");
+                }
+            })
+            .catch(err => console.log("❌ Сервер недоступен, играем локально", err));
             
             document.getElementById('feed-btn').addEventListener('click', () => {
                 if (isOffended) {
